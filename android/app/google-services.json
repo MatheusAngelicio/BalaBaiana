@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "934036725598",
+    "project_id": "bala-baiana-6d337",
+    "storage_bucket": "bala-baiana-6d337.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:934036725598:android:b111edae03560f862ab9cf",
+        "android_client_info": {
+          "package_name": "com.example.bala_baiana"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMtV-reZgGPcPw86vGNIQe8-CWZY-93RY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

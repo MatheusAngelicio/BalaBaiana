@@ -129,32 +129,12 @@ class BulletManagementPage extends StatelessWidget {
               ),
               const Spacer(),
               ElevatedButton(
-                onPressed: () {
-                  if (controller.formKey.currentState?.saveAndValidate() ??
-                      false) {
-                    final candyName = controller.candyNameController.text;
-                    final salePrice = controller.salePrice.value;
-                    final profit = controller.calculateProfit();
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text('Resumo $candyName'),
-                        content: Text(
-                          'Preço de venda: R\$ ${salePrice.toStringAsFixed(2)}\n'
-                          'Custo total dos ingredientes: R\$ ${controller.totalCost.value.toStringAsFixed(2)}\n'
-                          'Lucro: R\$ ${profit.toStringAsFixed(2)}',
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            child: const Text('Fechar'),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                },
-                child: const Text('Salvar Bala'),
+                onPressed: controller.isLoading.value
+                    ? null
+                    : () => controller.saveBulletToFirestore(),
+                child: controller.isLoading.value
+                    ? const CircularProgressIndicator()
+                    : const Text('Salvar Bala'),
               ),
             ],
           ),
