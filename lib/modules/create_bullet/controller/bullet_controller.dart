@@ -1,5 +1,6 @@
+import 'package:bala_baiana/entities/bullet.dart';
 import 'package:bala_baiana/entities/ingredient.dart';
-import 'package:bala_baiana/modules/bullet/services/bullet_service.dart';
+import 'package:bala_baiana/modules/common/service/bullet_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
@@ -54,13 +55,13 @@ class BulletManagementController extends GetxController {
       final salePrice = this.salePrice.value;
       final profit = calculateProfit();
 
-      final bulletData = {
-        'candyName': candyName,
-        'salePrice': salePrice,
-        'totalCost': totalCost.value,
-        'profit': profit,
-        'ingredients': ingredients.map((e) => e.toMap()).toList(),
-      };
+      final bulletData = Bullet(
+        candyName: candyName,
+        ingredients: ingredients,
+        profit: profit,
+        salePrice: salePrice,
+        totalCost: totalCost.value,
+      );
 
       try {
         await _bulletService.saveBullet(bulletData);

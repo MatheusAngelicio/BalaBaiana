@@ -10,4 +10,11 @@ class Ingredient {
       'cost': cost,
     };
   }
+
+  factory Ingredient.fromMap(Map<String, dynamic> data) {
+    return Ingredient(
+      name: data['name'],
+      cost: data['cost'],
+    );
+  }
 }

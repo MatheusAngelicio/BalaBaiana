@@ -1,12 +1,12 @@
-import 'package:bala_baiana/modules/bullet/controller/bullet_controller.dart';
-import 'package:bala_baiana/modules/bullet/widgets/add_ingredient_dialog.dart';
+import 'package:bala_baiana/modules/create_bullet/controller/bullet_controller.dart';
+import 'package:bala_baiana/modules/create_bullet/widgets/add_ingredient_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 
-class BulletManagementPage extends StatelessWidget {
-  BulletManagementPage({super.key});
+class CreateBulletPage extends StatelessWidget {
+  CreateBulletPage({super.key});
 
   final BulletManagementController controller =
       Get.put(BulletManagementController());

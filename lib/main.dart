@@ -1,9 +1,9 @@
 import 'package:bala_baiana/core/inject_service.dart';
+import 'package:bala_baiana/modules/list_bullet/page/list_bullet_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:get/get.dart';
-import 'modules/bullet/page/bullet_management_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: BulletManagementPage(),
+      home: ListBulletPage(),
       debugShowCheckedModeBanner: false,
     );
   }
