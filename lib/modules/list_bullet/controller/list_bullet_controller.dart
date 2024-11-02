@@ -1,6 +1,6 @@
+import 'package:bala_baiana/core/routes.dart';
 import 'package:bala_baiana/entities/bullet.dart';
 import 'package:bala_baiana/modules/common/service/bullet_service.dart';
-import 'package:bala_baiana/modules/create_bullet/page/create_bullet_page.dart';
 import 'package:get/get.dart';
 
 class ListBulletController extends GetxController {
@@ -27,6 +27,6 @@ class ListBulletController extends GetxController {
   }
 
   void navigateToCreateBulletPage() {
-    Get.to(CreateBulletPage());
+    Get.toNamed(AppRoutes.createBullet);
   }
 }

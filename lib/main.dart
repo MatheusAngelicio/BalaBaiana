@@ -1,4 +1,6 @@
 import 'package:bala_baiana/core/inject_service.dart';
+import 'package:bala_baiana/core/routes.dart';
+import 'package:bala_baiana/modules/create_bullet/page/create_bullet_page.dart';
 import 'package:bala_baiana/modules/list_bullet/page/list_bullet_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -22,12 +24,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Gestao de bala',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ListBulletPage(),
-      debugShowCheckedModeBanner: false,
+      initialRoute: AppRoutes.listBullet,
+      getPages: [
+        GetPage(name: AppRoutes.listBullet, page: () => ListBulletPage()),
+        GetPage(name: AppRoutes.createBullet, page: () => CreateBulletPage()),
+      ],
     );
   }
 }
