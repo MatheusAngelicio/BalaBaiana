@@ -66,7 +66,7 @@ class BulletManagementPage extends StatelessWidget {
                           itemBuilder: (context, index) {
                             final ingredient = controller.ingredients[index];
                             return Slidable(
-                              key: ValueKey(ingredient['name']),
+                              key: ValueKey(ingredient.name),
                               endActionPane: ActionPane(
                                 motion: const DrawerMotion(),
                                 children: [
@@ -80,9 +80,9 @@ class BulletManagementPage extends StatelessWidget {
                                 ],
                               ),
                               child: ListTile(
-                                title: Text(ingredient['name']),
+                                title: Text(ingredient.name),
                                 subtitle: Text(
-                                  'Custo: R\$ ${ingredient['cost'].toStringAsFixed(2)}',
+                                  'Custo: R\$ ${ingredient.cost.toStringAsFixed(2)}',
                                 ),
                               ),
                             );

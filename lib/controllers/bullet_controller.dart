@@ -1,18 +1,10 @@
+import 'package:bala_baiana/models/ingredient.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
 
 class BulletManagementController extends GetxController {
   final formKey = GlobalKey<FormBuilderState>();
-
-  // Controllers para os campos de formulário
-  final candyNameController = TextEditingController();
-  final salePriceController = TextEditingController();
-
-  // Observables para os valores calculados
-  final ingredients = <Map<String, dynamic>>[].obs;
-  final totalCost = 0.0.obs;
-  final salePrice = 0.0.obs;
 
   @override
   void onClose() {
@@ -21,9 +13,18 @@ class BulletManagementController extends GetxController {
     super.onClose();
   }
 
+  // Controllers para os campos de formulário
+  final candyNameController = TextEditingController();
+  final salePriceController = TextEditingController();
+
+  // Lista de ingredientes
+  final ingredients = <Ingredient>[].obs;
+  final totalCost = 0.0.obs;
+  final salePrice = 0.0.obs;
+
   // Adiciona um ingrediente
   void addIngredient(String name, double cost) {
-    ingredients.add({'name': name, 'cost': cost});
+    ingredients.add(Ingredient(name: name, cost: cost));
     updateTotalCost();
   }
 
@@ -36,7 +37,7 @@ class BulletManagementController extends GetxController {
   // Atualiza o custo total
   void updateTotalCost() {
     totalCost.value =
-        ingredients.fold(0.0, (sum, ingredient) => sum + ingredient['cost']);
+        ingredients.fold(0.0, (sum, ingredient) => sum + ingredient.cost);
   }
 
   // Calcula o lucro
