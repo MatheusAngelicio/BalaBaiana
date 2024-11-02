@@ -11,6 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  
+  get: ^4.6.5 
 
   flutter_form_builder: ^9.5.0
   flutter_slidable: ^3.1.1
