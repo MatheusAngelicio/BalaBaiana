@@ -1,9 +1,10 @@
+import 'package:bala_baiana/models/ingredient.dart';
 import 'package:flutter/material.dart';
 
 class AddIngredientDialog extends StatelessWidget {
   const AddIngredientDialog({super.key, required this.onAddIngredient});
 
-  final void Function(String name, double cost) onAddIngredient;
+  final void Function(Ingredient) onAddIngredient;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,7 @@ class AddIngredientDialog extends StatelessWidget {
             final name = nameController.text;
             final cost = double.tryParse(costController.text) ?? 0.0;
             if (name.isNotEmpty && cost > 0) {
-              onAddIngredient(name, cost);
+              onAddIngredient(Ingredient(name: name, cost: cost));
               Navigator.of(context).pop();
             } else {
               ScaffoldMessenger.of(context).showSnackBar(

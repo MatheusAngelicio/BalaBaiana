@@ -23,8 +23,8 @@ class BulletManagementController extends GetxController {
   }
 
   // Adiciona um ingrediente
-  void addIngredient(String name, double cost) {
-    ingredients.add(Ingredient(name: name, cost: cost));
+  void addIngredient(Ingredient ingredient) {
+    ingredients.add(ingredient);
     updateTotalCost();
   }
 

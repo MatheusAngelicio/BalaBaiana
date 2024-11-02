@@ -63,32 +63,36 @@ class BulletManagementPage extends StatelessWidget {
                 () => controller.ingredients.isEmpty
                     ? const Text('Sem ingredientes ainda.')
                     : Expanded(
-                        child: ListView.builder(
-                          itemCount: controller.ingredients.length,
-                          itemBuilder: (context, index) {
-                            final ingredient = controller.ingredients[index];
-                            return Slidable(
-                              key: ValueKey(ingredient.name),
-                              endActionPane: ActionPane(
-                                motion: const DrawerMotion(),
-                                children: [
-                                  SlidableAction(
-                                    onPressed: (context) =>
-                                        controller.removeIngredient(index),
-                                    backgroundColor: Colors.red,
-                                    icon: Icons.delete,
-                                    label: 'Remover',
-                                  ),
-                                ],
-                              ),
-                              child: ListTile(
-                                title: Text(ingredient.name),
-                                subtitle: Text(
-                                  'Custo: R\$ ${ingredient.cost.toStringAsFixed(2)}',
+                        child: Scrollbar(
+                          trackVisibility: true,
+                          thumbVisibility: true,
+                          child: ListView.builder(
+                            itemCount: controller.ingredients.length,
+                            itemBuilder: (context, index) {
+                              final ingredient = controller.ingredients[index];
+                              return Slidable(
+                                key: ValueKey(ingredient.name),
+                                endActionPane: ActionPane(
+                                  motion: const DrawerMotion(),
+                                  children: [
+                                    SlidableAction(
+                                      onPressed: (context) =>
+                                          controller.removeIngredient(index),
+                                      backgroundColor: Colors.red,
+                                      icon: Icons.delete,
+                                      label: 'Remover',
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            );
-                          },
+                                child: ListTile(
+                                  title: Text(ingredient.name),
+                                  subtitle: Text(
+                                    'Custo: R\$ ${ingredient.cost.toStringAsFixed(2)}',
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
               ),
@@ -99,8 +103,8 @@ class BulletManagementPage extends StatelessWidget {
                   showDialog(
                     context: context,
                     builder: (context) => AddIngredientDialog(
-                      onAddIngredient: (name, cost) {
-                        controller.addIngredient(name, cost);
+                      onAddIngredient: (ingredient) {
+                        controller.addIngredient(ingredient);
                       },
                     ),
                   );
