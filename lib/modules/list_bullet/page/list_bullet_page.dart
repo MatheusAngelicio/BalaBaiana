@@ -25,7 +25,7 @@ class ListBulletPage extends StatelessWidget {
         if (controller.loading.value) {
           return const Center(child: CircularProgressIndicator());
         } else if (controller.bullets.isEmpty) {
-          return const Center(child: Text('Nenhum bullet encontrado.'));
+          return const Center(child: Text('Nenhuma bala encontrado.'));
         } else {
           return ListView.builder(
             itemCount: controller.bullets.length,
@@ -39,6 +39,13 @@ class ListBulletPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Center(
+                        child: Text(
+                          bullet.candyName,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18),
+                        ),
+                      ),
                       Text(
                         'Custo Total',
                         style: const TextStyle(
@@ -47,6 +54,7 @@ class ListBulletPage extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      const SizedBox(height: 8),
                       Text(
                         'R\$${bullet.totalCost.toStringAsFixed(2)}',
                         style: const TextStyle(

@@ -4,6 +4,6 @@ import 'package:get/get.dart';
 
 class InjectService {
   static void init() {
-    Get.put<BulletService>(BulletServiceImpl(), permanent: true);
+    Get.put<BulletService>(BulletServiceImpl());
   }
 }

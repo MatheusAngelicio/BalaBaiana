@@ -19,10 +19,10 @@ class BulletManagementController extends GetxController {
   final salePrice = 0.0.obs;
 
   @override
-  void onClose() {
+  void dispose() {
     candyNameController.dispose();
     salePriceController.dispose();
-    super.onClose();
+    super.dispose();
   }
 
   // Calcula o lucro
