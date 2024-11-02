@@ -6,13 +6,6 @@ import 'package:get/get.dart';
 class BulletManagementController extends GetxController {
   final formKey = GlobalKey<FormBuilderState>();
 
-  @override
-  void onClose() {
-    candyNameController.dispose();
-    salePriceController.dispose();
-    super.onClose();
-  }
-
   // Controllers para os campos de formulário
   final candyNameController = TextEditingController();
   final salePriceController = TextEditingController();
@@ -21,6 +14,13 @@ class BulletManagementController extends GetxController {
   final ingredients = <Ingredient>[].obs;
   final totalCost = 0.0.obs;
   final salePrice = 0.0.obs;
+
+  @override
+  void onClose() {
+    candyNameController.dispose();
+    salePriceController.dispose();
+    super.onClose();
+  }
 
   // Adiciona um ingrediente
   void addIngredient(String name, double cost) {

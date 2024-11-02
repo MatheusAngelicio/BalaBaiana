@@ -1,4 +1,5 @@
 import 'package:bala_baiana/controllers/bullet_controller.dart';
+import 'package:bala_baiana/widgets/add_ingredient_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -44,7 +45,8 @@ class BulletManagementPage extends StatelessWidget {
                   border: OutlineInputBorder(),
                   prefixText: 'R\$ ',
                 ),
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
                 onChanged: (value) {
                   controller.salePrice.value =
                       double.tryParse(value ?? '') ?? 0.0;
@@ -75,7 +77,7 @@ class BulletManagementPage extends StatelessWidget {
                                         controller.removeIngredient(index),
                                     backgroundColor: Colors.red,
                                     icon: Icons.delete,
-                                    label: 'Remove',
+                                    label: 'Remover',
                                   ),
                                 ],
                               ),
@@ -93,49 +95,13 @@ class BulletManagementPage extends StatelessWidget {
 
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () async {
-                  final nameController = TextEditingController();
-                  final costController = TextEditingController();
-                  await showDialog(
+                onPressed: () {
+                  showDialog(
                     context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Adicionar Ingrediente'),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          TextField(
-                            controller: nameController,
-                            decoration: const InputDecoration(
-                                labelText: 'Nome do Ingrediente'),
-                          ),
-                          const SizedBox(height: 8),
-                          TextField(
-                            controller: costController,
-                            decoration: const InputDecoration(
-                                labelText: 'Custo', prefixText: 'R\$ '),
-                            keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
-                          ),
-                        ],
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('Cancel'),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            final name = nameController.text;
-                            final cost =
-                                double.tryParse(costController.text) ?? 0.0;
-                            if (name.isNotEmpty && cost > 0) {
-                              controller.addIngredient(name, cost);
-                              Navigator.of(context).pop();
-                            }
-                          },
-                          child: const Text('Add'),
-                        ),
-                      ],
+                    builder: (context) => AddIngredientDialog(
+                      onAddIngredient: (name, cost) {
+                        controller.addIngredient(name, cost);
+                      },
                     ),
                   );
                 },
@@ -177,7 +143,7 @@ class BulletManagementPage extends StatelessWidget {
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(),
-                            child: const Text('Close'),
+                            child: const Text('Fechar'),
                           ),
                         ],
                       ),
