@@ -1,5 +1,5 @@
-import 'package:bala_baiana/controllers/bullet_controller.dart';
-import 'package:bala_baiana/widgets/add_ingredient_dialog.dart';
+import 'package:bala_baiana/modules/bullet/controller/bullet_controller.dart';
+import 'package:bala_baiana/modules/bullet/widgets/add_ingredient_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';

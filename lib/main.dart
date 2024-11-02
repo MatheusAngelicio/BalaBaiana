@@ -1,18 +1,19 @@
-import 'package:bala_baiana/bindings/app_bindings.dart';
-import 'package:bala_baiana/services/bullet_service.dart';
-import 'package:bala_baiana/services/bullet_service_impl.dart';
+import 'package:bala_baiana/core/inject_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:get/get.dart';
-import 'views/bullet_management_page.dart';
+import 'modules/bullet/page/bullet_management_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  Get.put<BulletService>(BulletServiceImpl());
-  runApp(const MyApp());
+  InjectService.init();
+
+  runApp(Phoenix(
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -21,8 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'My Flutter App',
-      initialBinding: AppBindings(),
+      title: 'Gestao de bala',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

@@ -4,7 +4,6 @@ class Ingredient {
 
   Ingredient({required this.name, required this.cost});
 
-  // Método para converter Ingredient em um Map
   Map<String, dynamic> toMap() {
     return {
       'name': name,

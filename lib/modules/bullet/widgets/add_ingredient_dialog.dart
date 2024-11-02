@@ -1,4 +1,4 @@
-import 'package:bala_baiana/models/ingredient.dart';
+import 'package:bala_baiana/entities/ingredient.dart';
 import 'package:flutter/material.dart';
 
 class AddIngredientDialog extends StatelessWidget {
