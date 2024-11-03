@@ -1,10 +1,12 @@
 import 'package:bala_baiana/entities/bullet.dart';
 import 'package:bala_baiana/entities/sale.dart';
 import 'package:bala_baiana/modules/service/bullet/bullet_service.dart';
+import 'package:bala_baiana/modules/service/sale/sale_service.dart';
 import 'package:get/get.dart';
 
 class ScheduleWeekController extends GetxController {
   final BulletService _bulletService = Get.find<BulletService>();
+  final SaleService _saleService = Get.find<SaleService>();
 
   var sales = <Sale>[].obs;
   var bullets = <Bullet>[].obs;
@@ -15,6 +17,7 @@ class ScheduleWeekController extends GetxController {
   void onInit() {
     super.onInit();
     fetchBullets();
+    fetchSales();
   }
 
   Future<void> fetchBullets() async {
@@ -29,14 +32,30 @@ class ScheduleWeekController extends GetxController {
     }
   }
 
-  void addSale(
-      Bullet bullet, int quantity, DateTime deliveryDate, String customerName) {
-    sales.add(Sale(
+  Future<void> fetchSales() async {
+    loading.value = true;
+    try {
+      List<Sale> saleList = await _saleService.getSales();
+      sales.assignAll(saleList);
+    } catch (e) {
+      print('Erro ao buscar sales: $e');
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  Future<void> addSale(Bullet bullet, int quantity, DateTime deliveryDate,
+      String customerName) async {
+    final sale = Sale(
       flavor: bullet.candyName,
       quantity: quantity,
       deliveryDate: deliveryDate,
       customerName: customerName,
-    ));
+    );
+
+    await _saleService.saveSale(sale: sale);
+
+    sales.add(sale);
   }
 
   void markAsDelivered(int index) {

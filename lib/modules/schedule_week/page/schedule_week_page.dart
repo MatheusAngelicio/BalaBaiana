@@ -56,21 +56,26 @@ class _ScheduleWeekPageState extends State<ScheduleWeekPage>
             }),
           ),
         ),
-        body: Column(
-          children: [
-            Expanded(
-              child: TabBarView(
-                controller: tabController,
-                children: List.generate(14, (index) {
-                  final date =
-                      DateTime.now().subtract(Duration(days: 7 - index));
-                  return SalesListView(date: date);
-                }),
+        body: Obx(() {
+          if (controller.loading.value) {
+            return Center(child: CircularProgressIndicator());
+          }
+          return Column(
+            children: [
+              Expanded(
+                child: TabBarView(
+                  controller: tabController,
+                  children: List.generate(14, (index) {
+                    final date =
+                        DateTime.now().subtract(Duration(days: 7 - index));
+                    return SalesListView(date: date);
+                  }),
+                ),
               ),
-            ),
-            SalesSummaryWidget(tabController: tabController),
-          ],
-        ),
+              SalesSummaryWidget(tabController: tabController),
+            ],
+          );
+        }),
         floatingActionButton: _buildFloatingActionButton(),
       ),
     );
