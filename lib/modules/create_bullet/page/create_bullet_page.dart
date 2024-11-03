@@ -3,6 +3,7 @@ import 'package:bala_baiana/modules/create_bullet/widgets/add_ingredient_dialog.
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
 class CreateBulletPage extends StatelessWidget {
@@ -15,8 +16,10 @@ class CreateBulletPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bala Baiana'),
+        backgroundColor: Colors.pinkAccent,
+        title: const Text('Bala Baiana', style: TextStyle(color: Colors.white)),
         centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -25,18 +28,17 @@ class CreateBulletPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Campo para nome da bala
               FormBuilderTextField(
                 name: 'candyName',
                 controller: controller.candyNameController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Nome da bala',
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(FontAwesomeIcons.candyCane,
+                      color: Colors.pinkAccent),
                 ),
               ),
               const SizedBox(height: 16),
-
-              // Campo para preço de venda
               FormBuilderTextField(
                 name: 'salePrice',
                 controller: controller.salePriceController,
@@ -52,13 +54,13 @@ class CreateBulletPage extends StatelessWidget {
                       double.tryParse(value ?? '') ?? 0.0;
                 },
               ),
-
               const SizedBox(height: 16),
               const Text('Ingredientes',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.pinkAccent)),
               const SizedBox(height: 8),
-
-              // Lista de ingredientes
               Obx(
                 () => controller.ingredients.isEmpty
                     ? const Text('Sem ingredientes ainda.')
@@ -96,7 +98,6 @@ class CreateBulletPage extends StatelessWidget {
                         ),
                       ),
               ),
-
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
@@ -109,9 +110,13 @@ class CreateBulletPage extends StatelessWidget {
                     ),
                   );
                 },
-                child: const Text('Adicionar Ingrediente'),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.pinkAccent),
+                child: const Text(
+                  'Adicionar Ingrediente',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
-
               const SizedBox(height: 16),
               Obx(
                 () => Text(
@@ -124,7 +129,9 @@ class CreateBulletPage extends StatelessWidget {
                 () => Text(
                   'Lucro: R\$ ${controller.calculateProfit().toStringAsFixed(2)}',
                   style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.pinkAccent),
                 ),
               ),
               const Spacer(),
@@ -134,7 +141,12 @@ class CreateBulletPage extends StatelessWidget {
                     : () => controller.saveBulletToFirestore(),
                 child: controller.isLoading.value
                     ? const CircularProgressIndicator()
-                    : const Text('Salvar Bala'),
+                    : const Text(
+                        'Salvar Bala',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.pinkAccent),
               ),
             ],
           ),

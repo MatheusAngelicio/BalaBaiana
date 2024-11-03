@@ -1,3 +1,4 @@
+import 'package:bala_baiana/core/routes.dart';
 import 'package:bala_baiana/entities/bullet.dart';
 import 'package:bala_baiana/entities/ingredient.dart';
 import 'package:bala_baiana/modules/common/service/bullet_service.dart';
@@ -65,7 +66,8 @@ class BulletManagementController extends GetxController {
 
       try {
         await _bulletService.saveBullet(bulletData);
-        Get.snackbar('Sucesso', 'Bala salva com sucesso!');
+        Get.snackbar('Sucesso', '${bulletData.candyName} salva com sucesso!');
+        Get.offAllNamed(AppRoutes.listBullet);
       } catch (e) {
         print(e);
         Get.snackbar('Erro', 'Erro ao salvar a bala: $e');
