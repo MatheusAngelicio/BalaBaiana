@@ -32,8 +32,8 @@ class CreateBulletController extends GetxController {
     super.dispose();
   }
 
+  // Ajuste para cálculo correto do lucro
   double calculateProfit() {
-    salePrice.value = salePriceController.numberValue;
     return salePrice.value - totalCost.value;
   }
 
@@ -42,13 +42,11 @@ class CreateBulletController extends GetxController {
     updateTotalCost();
   }
 
-  // Atualiza o custo total
   void updateTotalCost() {
     totalCost.value =
         ingredients.fold(0.0, (sum, ingredient) => sum + ingredient.cost);
   }
 
-  // Remove um ingrediente
   void removeIngredient(int index) {
     ingredients.removeAt(index);
     updateTotalCost();
