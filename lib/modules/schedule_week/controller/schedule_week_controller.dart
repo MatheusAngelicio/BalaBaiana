@@ -1,12 +1,15 @@
-import 'package:bala_baiana/core/routes.dart';
 import 'package:bala_baiana/entities/bullet.dart';
+import 'package:bala_baiana/entities/sale.dart';
 import 'package:bala_baiana/modules/service/bullet/bullet_service.dart';
 import 'package:get/get.dart';
 
-class ListBulletController extends GetxController {
+class ScheduleWeekController extends GetxController {
   final BulletService _bulletService = Get.find<BulletService>();
+
+  var sales = <Sale>[].obs;
   var bullets = <Bullet>[].obs;
   var loading = true.obs;
+  var selectedBullet = Rx<Bullet?>(null);
 
   @override
   void onInit() {
@@ -26,7 +29,20 @@ class ListBulletController extends GetxController {
     }
   }
 
-  void navigateToCreateBulletPage() {
-    Get.toNamed(AppRoutes.createBullet);
+  void addSale(
+      Bullet bullet, int quantity, DateTime deliveryDate, String customerName) {
+    sales.add(Sale(
+      flavor: bullet.candyName,
+      quantity: quantity,
+      deliveryDate: deliveryDate,
+      customerName: customerName,
+    ));
+  }
+
+  void markAsDelivered(int index) {
+    if (index >= 0 && index < sales.length) {
+      sales[index].delivered = true;
+      sales.refresh();
+    }
   }
 }

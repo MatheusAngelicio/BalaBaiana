@@ -33,9 +33,9 @@ class AddIngredientDialog extends StatelessWidget {
             controller: nameController,
             decoration: InputDecoration(
               labelText: 'Nome do Ingrediente',
-              labelStyle: TextStyle(color: Colors.pinkAccent),
+              labelStyle: const TextStyle(color: Colors.pinkAccent),
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.pinkAccent),
+                borderSide: const BorderSide(color: Colors.pinkAccent),
                 borderRadius: BorderRadius.circular(10),
               ),
               enabledBorder: OutlineInputBorder(

@@ -1,7 +1,7 @@
 import 'package:bala_baiana/core/routes.dart';
 import 'package:bala_baiana/entities/bullet.dart';
 import 'package:bala_baiana/entities/ingredient.dart';
-import 'package:bala_baiana/modules/common/service/bullet_service.dart';
+import 'package:bala_baiana/modules/service/bullet/bullet_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
@@ -13,7 +13,6 @@ class CreateBulletController extends GetxController {
   final formKey = GlobalKey<FormBuilderState>();
   final candyNameController = TextEditingController();
 
-  // Substitua o TextEditingController pelo MoneyMaskedTextController
   final salePriceController = MoneyMaskedTextController(
     leftSymbol: 'R\$ ',
     decimalSeparator: ',',

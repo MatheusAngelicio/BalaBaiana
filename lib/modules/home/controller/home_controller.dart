@@ -5,4 +5,8 @@ class HomeController extends GetxController {
   void goToBulletPage() {
     Get.toNamed(AppRoutes.listBullet);
   }
+
+  void goToSheduleWeek() {
+    Get.toNamed(AppRoutes.scheduleWeek);
+  }
 }

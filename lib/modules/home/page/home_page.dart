@@ -50,7 +50,9 @@ class HomePage extends StatelessWidget {
 
             // Menu Programação da Semana
             GestureDetector(
-              onTap: () {},
+              onTap: () {
+                controller.goToSheduleWeek();
+              },
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 20),
