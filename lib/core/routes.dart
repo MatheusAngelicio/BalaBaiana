@@ -3,4 +3,5 @@ class AppRoutes {
   static const String listBullet = '/list';
   static const String createBullet = '/create';
   static const String scheduleWeek = '/schedule/week';
+  static const String salesChart = '/sales/chart';
 }

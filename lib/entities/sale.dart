@@ -6,6 +6,7 @@ class Sale {
   DateTime deliveryDate;
   bool delivered;
   String customerName;
+  double profitFromSale;
 
   Sale({
     required this.flavor,
@@ -13,6 +14,7 @@ class Sale {
     required this.deliveryDate,
     this.delivered = false,
     required this.customerName,
+    required this.profitFromSale,
   });
 
   factory Sale.fromMap(Map<String, dynamic> map) {
@@ -22,6 +24,7 @@ class Sale {
       deliveryDate: (map['deliveryDate'] as Timestamp).toDate(),
       delivered: map['delivered'] as bool? ?? false,
       customerName: map['customerName'] as String,
+      profitFromSale: map['profitFromSale'] as double,
     );
   }
 
@@ -32,6 +35,7 @@ class Sale {
       'deliveryDate': deliveryDate,
       'delivered': delivered,
       'customerName': customerName,
+      'profitFromSale': profitFromSale,
     };
   }
 }

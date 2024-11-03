@@ -46,11 +46,14 @@ class ScheduleWeekController extends GetxController {
 
   Future<void> addSale(Bullet bullet, int quantity, DateTime deliveryDate,
       String customerName) async {
+    final profitFromSale = bullet.profit * quantity;
+
     final sale = Sale(
       flavor: bullet.candyName,
       quantity: quantity,
       deliveryDate: deliveryDate,
       customerName: customerName,
+      profitFromSale: profitFromSale,
     );
 
     await _saleService.saveSale(sale: sale);

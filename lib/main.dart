@@ -3,6 +3,7 @@ import 'package:bala_baiana/core/routes.dart';
 import 'package:bala_baiana/modules/create_bullet/page/create_bullet_page.dart';
 import 'package:bala_baiana/modules/home/page/home_page.dart';
 import 'package:bala_baiana/modules/list_bullet/page/list_bullet_page.dart';
+import 'package:bala_baiana/modules/sales_chart/page/sales_chart_page.dart';
 import 'package:bala_baiana/modules/schedule_week/page/schedule_week_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: AppRoutes.createBullet, page: () => CreateBulletPage()),
         GetPage(name: AppRoutes.home, page: () => HomePage()),
         GetPage(name: AppRoutes.scheduleWeek, page: () => ScheduleWeekPage()),
+        GetPage(name: AppRoutes.salesChart, page: () => SalesChartPage()),
       ],
     );
   }

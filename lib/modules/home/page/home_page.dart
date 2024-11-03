@@ -76,7 +76,9 @@ class HomePage extends StatelessWidget {
 
             // Menu Gráfico de Vendas
             GestureDetector(
-              onTap: () {},
+              onTap: () {
+                controller.goToSalesChart();
+              },
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 20),

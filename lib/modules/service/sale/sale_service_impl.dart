@@ -14,6 +14,7 @@ class SaleServiceImpl extends SaleService {
       'deliveryDate': sale.deliveryDate,
       'customerName': sale.customerName,
       'delivered': sale.delivered,
+      'profitFromSale': sale.profitFromSale,
     };
     await _saleCollection.add(saleData);
   }
