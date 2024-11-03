@@ -16,17 +16,27 @@ class ListBulletController extends GetxController {
 
   Future<void> fetchBullets() async {
     loading.value = true;
-    try {
-      List<Bullet> bulletList = await _bulletService.getBullets();
-      bullets.assignAll(bulletList);
-    } catch (e) {
-      print('Erro ao buscar bullets: $e');
-    } finally {
-      loading.value = false;
-    }
+
+    final result = await _bulletService.getBullets();
+
+    result.fold(
+      (error) {
+        print('Erro ao buscar bullets: $error');
+      },
+      (bulletList) {
+        bullets.assignAll(bulletList);
+      },
+    );
+
+    loading.value = false; // Define loading como false após a operação
   }
 
-  void navigateToCreateBulletPage() {
-    Get.toNamed(AppRoutes.createBullet);
+  void navigateToCreateBulletPage() async {
+    print('Navegando para criar bala...');
+    final result = await Get.toNamed(AppRoutes.createBullet);
+    print('Resultado da criação: $result');
+    if (result == true) {
+      fetchBullets();
+    }
   }
 }

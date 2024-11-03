@@ -1,4 +1,3 @@
-import 'package:bala_baiana/core/routes.dart';
 import 'package:bala_baiana/entities/bullet.dart';
 import 'package:bala_baiana/entities/ingredient.dart';
 import 'package:bala_baiana/modules/service/bullet/bullet_service.dart';
@@ -53,6 +52,8 @@ class CreateBulletController extends GetxController {
   }
 
   Future<void> saveBulletToFirestore() async {
+    print('Tentando salvar a bala...');
+
     if (formKey.currentState?.saveAndValidate() ?? false) {
       isLoading.value = true;
       final candyName = candyNameController.text;
@@ -67,16 +68,20 @@ class CreateBulletController extends GetxController {
         totalCost: totalCost.value,
       );
 
-      try {
-        await _bulletService.saveBullet(bulletData);
-        Get.snackbar('Sucesso', '${bulletData.candyName} salva com sucesso!');
-        Get.offAllNamed(AppRoutes.listBullet);
-      } catch (e) {
-        print(e);
-        Get.snackbar('Erro', 'Erro ao salvar a bala: $e');
-      } finally {
-        isLoading.value = false;
-      }
+      final result = await _bulletService.saveBullet(bulletData);
+
+      result.fold(
+        (error) {
+          print('Erro ao salvar a bala: $error');
+          Get.snackbar('Erro', 'Erro ao salvar a bala: $error');
+        },
+        (_) async {
+          Get.back(result: true);
+          Get.snackbar('Sucesso', '${bulletData.candyName} salva com sucesso!');
+        },
+      );
+
+      isLoading.value = false;
     }
   }
 }

@@ -10,10 +10,10 @@ class SalesChartController extends GetxController {
   var sales = <Sale>[].obs;
   var loading = true.obs;
   var salesData = <DateTime, int>{}.obs;
-  var selectedFilter = 'week'.obs; // "week" para semana e "month" para mês
+  var selectedFilter = 'week'.obs;
 
   var totalProfit = 0.0.obs;
-  var flavorSummary = <String, int>{}.obs; // Quantidade de vendas por sabor
+  var flavorSummary = <String, int>{}.obs;
   var deliveredCount = 0.obs;
   var pendingCount = 0.obs;
 
@@ -25,16 +25,21 @@ class SalesChartController extends GetxController {
 
   Future<void> fetchSales() async {
     loading.value = true;
-    try {
-      List<Sale> saleList = await _saleService.getSales();
-      sales.assignAll(saleList);
-      filterSalesData();
-      calculateSummary(); // Gera o resumo de dados
-    } catch (e) {
-      print('Erro ao buscar sales: $e');
-    } finally {
-      loading.value = false;
-    }
+
+    final result = await _saleService.getSales();
+
+    result.fold(
+      (failure) {
+        print('Erro ao buscar vendas: ${failure.message}');
+      },
+      (saleList) {
+        sales.assignAll(saleList);
+        filterSalesData(); // Filtra os dados das vendas
+        calculateSummary(); // Gera o resumo de dados
+      },
+    );
+
+    loading.value = false;
   }
 
   void filterSalesData() {

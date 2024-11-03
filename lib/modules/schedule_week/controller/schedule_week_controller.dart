@@ -22,26 +22,35 @@ class ScheduleWeekController extends GetxController {
 
   Future<void> fetchBullets() async {
     loading.value = true;
-    try {
-      List<Bullet> bulletList = await _bulletService.getBullets();
-      bullets.assignAll(bulletList);
-    } catch (e) {
-      print('Erro ao buscar bullets: $e');
-    } finally {
-      loading.value = false;
-    }
+    final result = await _bulletService.getBullets();
+
+    result.fold(
+      (error) {
+        print('Erro ao buscar bullets: $error');
+      },
+      (bulletList) {
+        bullets.assignAll(bulletList);
+      },
+    );
+
+    loading.value = false;
   }
 
   Future<void> fetchSales() async {
     loading.value = true;
-    try {
-      List<Sale> saleList = await _saleService.getSales();
-      sales.assignAll(saleList);
-    } catch (e) {
-      print('Erro ao buscar sales: $e');
-    } finally {
-      loading.value = false;
-    }
+
+    final result = await _saleService.getSales();
+
+    result.fold(
+      (failure) {
+        print('Erro ao buscar vendas: ${failure.message}');
+      },
+      (saleList) {
+        sales.assignAll(saleList);
+      },
+    );
+
+    loading.value = false;
   }
 
   Future<void> addSale(Bullet bullet, int quantity, DateTime deliveryDate,
@@ -56,9 +65,17 @@ class ScheduleWeekController extends GetxController {
       profitFromSale: profitFromSale,
     );
 
-    await _saleService.saveSale(sale: sale);
+    final result = await _saleService.saveSale(sale: sale);
 
-    sales.add(sale);
+    result.fold(
+      (failure) {
+        print('Erro ao adicionar venda: ${failure.message}');
+      },
+      (_) {
+        sales.add(sale);
+        print('Venda adicionada com sucesso: ${sale.flavor}');
+      },
+    );
   }
 
   void markAsDelivered(int index) {
