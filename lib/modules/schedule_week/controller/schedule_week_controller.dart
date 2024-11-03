@@ -45,4 +45,26 @@ class ScheduleWeekController extends GetxController {
       sales.refresh();
     }
   }
+
+  List<Sale> getSalesForDate(DateTime date) {
+    return sales.where((sale) => isSameDay(sale.deliveryDate, date)).toList();
+  }
+
+  Map<String, int> calculateSalesSummary(DateTime date) {
+    final dailySales =
+        sales.where((sale) => isSameDay(sale.deliveryDate, date));
+    final summary = <String, int>{};
+
+    for (var sale in dailySales) {
+      summary[sale.flavor] = (summary[sale.flavor] ?? 0) + sale.quantity;
+    }
+
+    return summary;
+  }
+
+  bool isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
 }
