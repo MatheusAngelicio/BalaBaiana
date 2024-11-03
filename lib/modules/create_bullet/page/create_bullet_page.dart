@@ -2,6 +2,7 @@ import 'package:bala_baiana/modules/create_bullet/controller/create_bullet_contr
 import 'package:bala_baiana/modules/create_bullet/widgets/add_ingredient_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -40,17 +41,20 @@ class CreateBulletPage extends StatelessWidget {
               const SizedBox(height: 16),
               FormBuilderTextField(
                 name: 'salePrice',
-                controller: controller.salePriceController,
+                controller: MoneyMaskedTextController(
+                  leftSymbol: 'R\$ ',
+                  decimalSeparator: ',',
+                  thousandSeparator: '.',
+                ),
                 decoration: const InputDecoration(
                   labelText: 'Preço da bala',
                   border: OutlineInputBorder(),
-                  prefixText: 'R\$ ',
                 ),
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
                 onChanged: (value) {
                   controller.salePrice.value =
-                      double.tryParse(value ?? '') ?? 0.0;
+                      controller.salePriceController.numberValue;
                 },
               ),
               const SizedBox(height: 16),

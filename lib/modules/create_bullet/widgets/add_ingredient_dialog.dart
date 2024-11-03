@@ -1,5 +1,6 @@
 import 'package:bala_baiana/entities/ingredient.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 
 class AddIngredientDialog extends StatelessWidget {
   const AddIngredientDialog({super.key, required this.onAddIngredient});
@@ -9,22 +10,55 @@ class AddIngredientDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final nameController = TextEditingController();
-    final costController = TextEditingController();
+    final costController = MoneyMaskedTextController(
+      leftSymbol: 'R\$ ',
+      decimalSeparator: ',',
+      thousandSeparator: '.',
+    );
 
     return AlertDialog(
-      title: const Text('Adicionar Ingrediente'),
+      backgroundColor: Colors.pink[50],
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      title: const Text(
+        'Adicionar Ingrediente',
+        style: TextStyle(
+          color: Colors.pinkAccent,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
             controller: nameController,
-            decoration: const InputDecoration(labelText: 'Nome do Ingrediente'),
+            decoration: InputDecoration(
+              labelText: 'Nome do Ingrediente',
+              labelStyle: TextStyle(color: Colors.pinkAccent),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.pinkAccent),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.pink[300]!),
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           TextField(
             controller: costController,
-            decoration:
-                const InputDecoration(labelText: 'Custo', prefixText: 'R\$ '),
+            decoration: InputDecoration(
+              labelText: 'Custo',
+              labelStyle: const TextStyle(color: Colors.pinkAccent),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.pinkAccent),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.pink[300]!),
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
           ),
         ],
@@ -32,23 +66,37 @@ class AddIngredientDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.pinkAccent,
+          ),
           child: const Text('Cancelar'),
         ),
-        TextButton(
+        ElevatedButton(
           onPressed: () {
             final name = nameController.text;
-            final cost = double.tryParse(costController.text) ?? 0.0;
+            final cost = costController.numberValue;
             if (name.isNotEmpty && cost > 0) {
               onAddIngredient(Ingredient(name: name, cost: cost));
               Navigator.of(context).pop();
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                    content:
-                        Text('Por favor, insira um nome e um custo válidos.')),
+                  content: Text(
+                    'Por favor, insira um nome e um custo válidos.',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  backgroundColor: Colors.pinkAccent,
+                ),
               );
             }
           },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.pinkAccent,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
           child: const Text('Adicionar'),
         ),
       ],

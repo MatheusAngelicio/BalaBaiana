@@ -5,13 +5,20 @@ import 'package:bala_baiana/modules/common/service/bullet_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 
 class CreateBulletController extends GetxController {
   final BulletService _bulletService = Get.find<BulletService>();
 
   final formKey = GlobalKey<FormBuilderState>();
   final candyNameController = TextEditingController();
-  final salePriceController = TextEditingController();
+
+  // Substitua o TextEditingController pelo MoneyMaskedTextController
+  final salePriceController = MoneyMaskedTextController(
+    leftSymbol: 'R\$ ',
+    decimalSeparator: ',',
+    thousandSeparator: '.',
+  );
 
   final isLoading = false.obs;
 
@@ -26,9 +33,8 @@ class CreateBulletController extends GetxController {
     super.dispose();
   }
 
-  // Calcula o lucro
   double calculateProfit() {
-    salePrice.value = double.tryParse(salePriceController.text) ?? 0.0;
+    salePrice.value = salePriceController.numberValue;
     return salePrice.value - totalCost.value;
   }
 
