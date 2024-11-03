@@ -23,6 +23,7 @@ class ListBulletPage extends StatelessWidget {
             },
           ),
         ],
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Obx(() {
         if (controller.loading.value) {

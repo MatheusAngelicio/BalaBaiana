@@ -1,6 +1,7 @@
 import 'package:bala_baiana/core/inject_service.dart';
 import 'package:bala_baiana/core/routes.dart';
 import 'package:bala_baiana/modules/create_bullet/page/create_bullet_page.dart';
+import 'package:bala_baiana/modules/home/page/home_page.dart';
 import 'package:bala_baiana/modules/list_bullet/page/list_bullet_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -29,10 +30,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: AppRoutes.listBullet,
+      initialRoute: AppRoutes.home,
       getPages: [
         GetPage(name: AppRoutes.listBullet, page: () => ListBulletPage()),
         GetPage(name: AppRoutes.createBullet, page: () => CreateBulletPage()),
+        GetPage(name: AppRoutes.home, page: () => HomePage()),
       ],
     );
   }

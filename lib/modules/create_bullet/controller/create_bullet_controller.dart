@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
 
-class BulletManagementController extends GetxController {
+class CreateBulletController extends GetxController {
   final BulletService _bulletService = Get.find<BulletService>();
 
   final formKey = GlobalKey<FormBuilderState>();

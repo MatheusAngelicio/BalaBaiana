@@ -1,4 +1,4 @@
-import 'package:bala_baiana/modules/create_bullet/controller/bullet_controller.dart';
+import 'package:bala_baiana/modules/create_bullet/controller/create_bullet_controller.dart';
 import 'package:bala_baiana/modules/create_bullet/widgets/add_ingredient_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -9,8 +9,7 @@ import 'package:get/get.dart';
 class CreateBulletPage extends StatelessWidget {
   CreateBulletPage({super.key});
 
-  final BulletManagementController controller =
-      Get.put(BulletManagementController());
+  final CreateBulletController controller = Get.put(CreateBulletController());
 
   @override
   Widget build(BuildContext context) {
