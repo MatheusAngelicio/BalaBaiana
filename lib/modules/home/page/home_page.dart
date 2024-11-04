@@ -62,7 +62,7 @@ class HomePage extends StatelessWidget {
                 ),
                 child: const Center(
                   child: Text(
-                    'Programação da Semana',
+                    'Programação de Encomendas',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
