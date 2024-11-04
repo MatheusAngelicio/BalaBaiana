@@ -1,5 +1,6 @@
 import 'package:bala_baiana/core/inject_service.dart';
 import 'package:bala_baiana/core/routes.dart';
+import 'package:bala_baiana/modules/candy_menu/page/candy_menu_page.dart';
 import 'package:bala_baiana/modules/create_bullet/page/create_bullet_page.dart';
 import 'package:bala_baiana/modules/home/page/home_page.dart';
 import 'package:bala_baiana/modules/list_bullet/page/list_bullet_page.dart';
@@ -46,6 +47,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: AppRoutes.home, page: () => HomePage()),
         GetPage(name: AppRoutes.scheduleWeek, page: () => ScheduleWeekPage()),
         GetPage(name: AppRoutes.salesChart, page: () => SalesChartPage()),
+        GetPage(name: AppRoutes.candyMenu, page: () => CandyMenuPage()),
       ],
     );
   }

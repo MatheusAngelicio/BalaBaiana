@@ -1,11 +1,11 @@
-import 'package:bala_baiana/modules/home/controller/home_controller.dart';
+import 'package:bala_baiana/modules/candy_menu/controller/candy_menu_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class HomePage extends StatelessWidget {
-  HomePage({super.key});
+class CandyMenuPage extends StatelessWidget {
+  CandyMenuPage({super.key});
 
-  final HomeController controller = Get.put(HomeController());
+  final CandyMenuController controller = Get.put(CandyMenuController());
 
   @override
   Widget build(BuildContext context) {
@@ -16,16 +16,14 @@ class HomePage extends StatelessWidget {
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        backgroundColor: Colors.pinkAccent,
+        backgroundColor: Colors.purpleAccent,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             GestureDetector(
-              onTap: () {
-                controller.goToCandyPage();
-              },
+              onTap: () {},
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 20),
@@ -39,7 +37,7 @@ class HomePage extends StatelessWidget {
                 ),
                 child: const Center(
                   child: Text(
-                    'Doces',
+                    'Caramelo',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -52,14 +50,14 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 16),
             GestureDetector(
               onTap: () {
-                controller.goToSheduleWeek();
+                controller.goToCandyPage();
               },
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Colors.blueAccent, Colors.purpleAccent],
+                    colors: [Colors.deepPurple, Colors.pink],
                     begin: Alignment.topRight,
                     end: Alignment.bottomLeft,
                   ),
@@ -67,35 +65,7 @@ class HomePage extends StatelessWidget {
                 ),
                 child: const Center(
                   child: Text(
-                    'Programação de Encomendas',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            GestureDetector(
-              onTap: () {
-                controller.goToSalesChart();
-              },
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Colors.green, Colors.teal],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Gráfico de Vendas',
+                    'Bala baiana',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
