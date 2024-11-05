@@ -4,7 +4,7 @@ import 'package:bala_baiana/modules/service/bullet/bullet_service.dart';
 import 'package:bala_baiana/modules/service/sale/sale_service.dart';
 import 'package:get/get.dart';
 
-class ScheduleWeekController extends GetxController {
+class SaleOnOrderController extends GetxController {
   final BulletService _bulletService = Get.find<BulletService>();
   final SaleService _saleService = Get.find<SaleService>();
 

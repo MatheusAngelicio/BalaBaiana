@@ -1,4 +1,4 @@
-import 'package:bala_baiana/modules/home/controller/home_controller.dart';
+import 'package:bala_baiana/modules/home/home_home/controller/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -67,7 +67,7 @@ class HomePage extends StatelessWidget {
                 ),
                 child: const Center(
                   child: Text(
-                    'Programação de Encomendas',
+                    'Programação de Vendas',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

@@ -1,11 +1,11 @@
 import 'package:bala_baiana/entities/bullet.dart';
-import 'package:bala_baiana/modules/schedule_week/controller/schedule_week_controller.dart';
+import 'package:bala_baiana/modules/sale_on_order/controller/sale_on_order_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AddSaleDialog extends StatelessWidget {
   final DateTime selectedDate;
-  final ScheduleWeekController controller;
+  final SaleOnOrderController controller;
 
   const AddSaleDialog({
     Key? key,

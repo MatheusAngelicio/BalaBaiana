@@ -1,16 +1,16 @@
-import 'package:bala_baiana/modules/schedule_week/controller/schedule_week_controller.dart';
+import 'package:bala_baiana/modules/sale_on_order/controller/sale_on_order_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class SalesSummaryWidget extends StatelessWidget {
   final TabController tabController;
 
-  const SalesSummaryWidget({Key? key, required this.tabController})
-      : super(key: key);
+  const SalesSummaryWidget({super.key, required this.tabController});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<ScheduleWeekController>();
+    final controller = Get.find<SaleOnOrderController>();
     final selectedDate =
         DateTime.now().subtract(Duration(days: 7 - tabController.index));
 
@@ -22,6 +22,8 @@ class SalesSummaryWidget extends StatelessWidget {
       }
 
       final total = summary.values.reduce((a, b) => a + b);
+      final dateFormatter = DateFormat('dd/MM/yyyy');
+      String title = 'PEDIDOS PARA O DIA ${dateFormatter.format(selectedDate)}';
 
       return Padding(
         padding: const EdgeInsets.all(16.0),
@@ -35,9 +37,9 @@ class SalesSummaryWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'PEDIDOS PARA HOJE',
-                  style: TextStyle(
+                Text(
+                  title,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),

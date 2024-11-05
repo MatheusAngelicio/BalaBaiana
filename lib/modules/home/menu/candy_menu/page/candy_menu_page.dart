@@ -1,4 +1,4 @@
-import 'package:bala_baiana/modules/candy_menu/controller/candy_menu_controller.dart';
+import 'package:bala_baiana/modules/home/menu/candy_menu/controller/candy_menu_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -17,6 +17,7 @@ class CandyMenuPage extends StatelessWidget {
         ),
         centerTitle: true,
         backgroundColor: Colors.purpleAccent,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

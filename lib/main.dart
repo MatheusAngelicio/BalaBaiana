@@ -1,11 +1,12 @@
 import 'package:bala_baiana/core/inject_service.dart';
 import 'package:bala_baiana/core/routes.dart';
-import 'package:bala_baiana/modules/candy_menu/page/candy_menu_page.dart';
+import 'package:bala_baiana/modules/home/menu/candy_menu/page/candy_menu_page.dart';
 import 'package:bala_baiana/modules/create_bullet/page/create_bullet_page.dart';
-import 'package:bala_baiana/modules/home/page/home_page.dart';
+import 'package:bala_baiana/modules/home/home_home/page/home_page.dart';
 import 'package:bala_baiana/modules/list_bullet/page/list_bullet_page.dart';
-import 'package:bala_baiana/modules/sales_chart/page/sales_chart_page.dart';
-import 'package:bala_baiana/modules/schedule_week/page/schedule_week_page.dart';
+import 'package:bala_baiana/modules/home/menu/sales_chart/page/sales_chart_page.dart';
+import 'package:bala_baiana/modules/sale_on_order/page/sale_on_order_page.dart';
+import 'package:bala_baiana/modules/home/menu/sales_schedule_menu/page/sales_schedule_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
@@ -45,9 +46,10 @@ class MyApp extends StatelessWidget {
         GetPage(name: AppRoutes.listBullet, page: () => ListBulletPage()),
         GetPage(name: AppRoutes.createBullet, page: () => CreateBulletPage()),
         GetPage(name: AppRoutes.home, page: () => HomePage()),
-        GetPage(name: AppRoutes.scheduleWeek, page: () => ScheduleWeekPage()),
+        GetPage(name: AppRoutes.saleOnOrder, page: () => SaleOnOrderPage()),
         GetPage(name: AppRoutes.salesChart, page: () => SalesChartPage()),
         GetPage(name: AppRoutes.candyMenu, page: () => CandyMenuPage()),
+        GetPage(name: AppRoutes.salesSchedule, page: () => SalesSchedulePage()),
       ],
     );
   }

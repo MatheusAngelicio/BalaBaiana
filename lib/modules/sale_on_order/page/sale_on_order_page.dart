@@ -1,22 +1,22 @@
-import 'package:bala_baiana/modules/schedule_week/controller/schedule_week_controller.dart';
-import 'package:bala_baiana/modules/schedule_week/widgets/add_sale_dialog.dart';
-import 'package:bala_baiana/modules/schedule_week/widgets/sales_list_view.dart';
-import 'package:bala_baiana/modules/schedule_week/widgets/sales_summary_widget.dart';
+import 'package:bala_baiana/modules/sale_on_order/controller/sale_on_order_controller.dart';
+import 'package:bala_baiana/modules/sale_on_order/widgets/add_sale_dialog.dart';
+import 'package:bala_baiana/modules/sale_on_order/widgets/sales_list_view.dart';
+import 'package:bala_baiana/modules/sale_on_order/widgets/sales_summary_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-class ScheduleWeekPage extends StatefulWidget {
-  ScheduleWeekPage({Key? key}) : super(key: key);
+class SaleOnOrderPage extends StatefulWidget {
+  SaleOnOrderPage({Key? key}) : super(key: key);
 
   @override
-  _ScheduleWeekPageState createState() => _ScheduleWeekPageState();
+  _SaleOnOrderPageState createState() => _SaleOnOrderPageState();
 }
 
-class _ScheduleWeekPageState extends State<ScheduleWeekPage>
+class _SaleOnOrderPageState extends State<SaleOnOrderPage>
     with SingleTickerProviderStateMixin {
   late TabController tabController;
-  final ScheduleWeekController controller = Get.put(ScheduleWeekController());
+  final SaleOnOrderController controller = Get.put(SaleOnOrderController());
 
   @override
   void initState() {

@@ -1,4 +1,4 @@
-import 'package:bala_baiana/modules/sales_chart/controller/sales_chart_controller.dart';
+import 'package:bala_baiana/modules/home/menu/sales_chart/controller/sales_chart_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';

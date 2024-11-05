@@ -1,4 +1,4 @@
-import 'package:bala_baiana/modules/schedule_week/controller/schedule_week_controller.dart';
+import 'package:bala_baiana/modules/sale_on_order/controller/sale_on_order_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -9,7 +9,7 @@ class SalesListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<ScheduleWeekController>();
+    final controller = Get.find<SaleOnOrderController>();
 
     return Obx(() {
       final filteredSales = controller.getSalesForDate(date);

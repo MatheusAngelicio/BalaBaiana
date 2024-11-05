@@ -7,7 +7,7 @@ class HomeController extends GetxController {
   }
 
   void goToSheduleWeek() {
-    Get.toNamed(AppRoutes.scheduleWeek);
+    Get.toNamed(AppRoutes.salesSchedule);
   }
 
   void goToSalesChart() {
