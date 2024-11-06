@@ -11,6 +11,7 @@ class SalesChartController extends GetxController {
   var loading = true.obs;
   var salesData = <DateTime, int>{}.obs;
   var selectedFilter = 'week'.obs;
+  var salesProfitData = <DateTime, double>{}.obs;
 
   var totalProfit = 0.0.obs;
   var flavorSummary = <String, int>{}.obs;
@@ -44,7 +45,8 @@ class SalesChartController extends GetxController {
 
   void filterSalesData() {
     DateTime now = DateTime.now();
-    Map<DateTime, int> data = {};
+    Map<DateTime, int> quantityData = {};
+    Map<DateTime, double> profitData = {};
 
     for (var sale in sales) {
       DateTime date = DateTime(sale.deliveryDate.year, sale.deliveryDate.month,
@@ -55,19 +57,22 @@ class SalesChartController extends GetxController {
         DateTime weekEnd =
             now.add(Duration(days: DateTime.daysPerWeek - now.weekday));
 
-        if (date.isAfter(weekStart.subtract(Duration(days: 1))) &&
-            date.isBefore(weekEnd.add(Duration(days: 1)))) {
-          data[date] = (data[date] ?? 0) + sale.quantity;
+        if (date.isAfter(weekStart.subtract(const Duration(days: 1))) &&
+            date.isBefore(weekEnd.add(const Duration(days: 1)))) {
+          quantityData[date] = (quantityData[date] ?? 0) + sale.quantity;
+          profitData[date] = (profitData[date] ?? 0) + sale.profitFromSale;
         }
       } else if (selectedFilter.value == 'month') {
         if (date.year == now.year && date.month == now.month) {
-          data[date] = (data[date] ?? 0) + sale.quantity;
+          quantityData[date] = (quantityData[date] ?? 0) + sale.quantity;
+          profitData[date] = (profitData[date] ?? 0) + sale.profitFromSale;
         }
       }
     }
 
-    salesData.assignAll(data);
-    calculateSummary(); // Atualiza o resumo após o filtro
+    salesData.assignAll(quantityData);
+    salesProfitData.assignAll(profitData);
+    calculateSummary();
   }
 
   List<BarChartGroupData> getBarChartData() {
@@ -75,16 +80,24 @@ class SalesChartController extends GetxController {
     int index = 0;
 
     salesData.forEach((date, quantity) {
+      double profit = salesProfitData[date]?.toDouble() ?? 0.0;
+
       barGroups.add(
         BarChartGroupData(
           x: index,
           barRods: [
             BarChartRodData(
               toY: quantity.toDouble(),
-              color: Colors.blue, // Cor da barra
-              width: 16, // Largura da barra
+              color: Colors.blue, // Quantidade de Vendas (barra azul)
+              width: 8,
+            ),
+            BarChartRodData(
+              toY: profit,
+              color: Colors.green, // Lucro (barra verde)
+              width: 8,
             ),
           ],
+          barsSpace: 4, // Espaçamento entre as barras
         ),
       );
       index++;

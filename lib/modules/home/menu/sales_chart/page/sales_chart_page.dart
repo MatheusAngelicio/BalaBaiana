@@ -58,38 +58,70 @@ class SalesChartPage extends StatelessWidget {
           onPressed: () {
             controller.updateFilter(filter);
           },
-          child: Text(text),
+          child: Text(
+            text,
+            style: const TextStyle(color: Colors.white),
+          ),
         ));
   }
 
   Widget salesBarChart() {
-    return BarChart(
-      swapAnimationDuration: const Duration(seconds: 3),
-      swapAnimationCurve: Curves.linear,
-      BarChartData(
-        barGroups: controller.getBarChartData(),
-        titlesData: FlTitlesData(
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: true),
-          ),
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (value, _) {
-                if (value.toInt() >= 0 &&
-                    value.toInt() < controller.salesData.keys.length) {
-                  DateTime date =
-                      controller.salesData.keys.toList()[value.toInt()];
-                  return Text('${date.month}/${date.day}');
-                }
-                return const Text('');
-              },
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            legendIndicator(Colors.blue, 'Quantidade de Vendas'),
+            const SizedBox(width: 10),
+            legendIndicator(Colors.green, 'Lucro das Vendas'),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Expanded(
+          child: BarChart(
+            swapAnimationDuration: const Duration(seconds: 3),
+            swapAnimationCurve: Curves.linear,
+            BarChartData(
+              barGroups: controller.getBarChartData(),
+              titlesData: FlTitlesData(
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(showTitles: true),
+                ),
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    getTitlesWidget: (value, _) {
+                      if (value.toInt() >= 0 &&
+                          value.toInt() < controller.salesData.keys.length) {
+                        DateTime date =
+                            controller.salesData.keys.toList()[value.toInt()];
+                        return Text('${date.month}/${date.day}');
+                      }
+                      return const Text('');
+                    },
+                  ),
+                ),
+              ),
+              gridData: FlGridData(show: true),
+              borderData: FlBorderData(show: true),
             ),
           ),
         ),
-        gridData: FlGridData(show: true),
-        borderData: FlBorderData(show: true),
-      ),
+      ],
+    );
+  }
+
+  Widget legendIndicator(Color color, String text) {
+    return Row(
+      children: [
+        Container(
+          width: 10,
+          height: 10,
+          color: color,
+        ),
+        const SizedBox(width: 5),
+        Text(text),
+      ],
     );
   }
 
