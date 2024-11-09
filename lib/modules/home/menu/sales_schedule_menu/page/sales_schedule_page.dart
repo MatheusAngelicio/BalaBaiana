@@ -24,7 +24,9 @@ class SalesSchedulePage extends StatelessWidget {
         child: Column(
           children: [
             GestureDetector(
-              onTap: () {},
+              onTap: () {
+                controller.goToDailySales();
+              },
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 20),
@@ -51,7 +53,7 @@ class SalesSchedulePage extends StatelessWidget {
             const SizedBox(height: 16),
             GestureDetector(
               onTap: () {
-                controller.goToSalesScheduleMenu();
+                controller.goToSalesOnOrder();
               },
               child: Container(
                 width: double.infinity,
