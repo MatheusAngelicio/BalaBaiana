@@ -6,7 +6,7 @@ import 'package:dartz/dartz.dart';
 
 class BulletServiceImpl extends BulletService {
   final CollectionReference _bulletCollection =
-      FirebaseFirestore.instance.collection('bullet');
+      FirebaseFirestore.instance.collection('balas');
 
   @override
   Future<Either<Failure, void>> saveBullet(Bullet bullet) async {

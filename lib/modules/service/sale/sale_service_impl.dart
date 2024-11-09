@@ -6,7 +6,7 @@ import 'package:dartz/dartz.dart';
 
 class SaleServiceImpl extends SaleService {
   final CollectionReference _saleCollection =
-      FirebaseFirestore.instance.collection('sales');
+      FirebaseFirestore.instance.collection('vendas');
 
   @override
   Future<Either<Failure, void>> saveSale({required Sale sale}) async {
