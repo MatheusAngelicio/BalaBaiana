@@ -10,16 +10,8 @@ class BulletServiceImpl extends BulletService {
 
   @override
   Future<Either<Failure, void>> saveBullet(Bullet bullet) async {
-    final bulletData = {
-      'nomeBala': bullet.candyName,
-      'precoBala': bullet.salePrice,
-      'custoBala': bullet.totalCost,
-      'lucroBala': bullet.profit,
-      'ingredientes': bullet.ingredients.map((e) => e.toMap()).toList(),
-    };
-
     try {
-      await _bulletCollection.add(bulletData);
+      await _bulletCollection.add(bullet.toMap());
       return const Right(null);
     } catch (e) {
       return Left(Failure('Erro ao salvar a bala: ${e.toString()}'));

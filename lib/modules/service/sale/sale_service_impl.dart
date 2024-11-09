@@ -11,16 +11,8 @@ class SaleServiceImpl extends SaleService {
   @override
   Future<Either<Failure, void>> saveSale({required Sale sale}) async {
     try {
-      final saleData = {
-        'sabor': sale.flavor,
-        'quantidade': sale.quantity,
-        'dataPedido': sale.deliveryDate,
-        'nomeCliente': sale.customerName,
-        'entregue': sale.delivered,
-        'lucroDaVenda': sale.profitFromSale,
-      };
-      await _saleCollection.add(saleData);
-      return Right(null);
+      await _saleCollection.add(sale.toMap());
+      return const Right(null);
     } catch (e) {
       return Left(Failure('Erro ao salvar a venda: $e'));
     }
