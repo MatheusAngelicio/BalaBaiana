@@ -19,23 +19,23 @@ class Sale {
 
   factory Sale.fromMap(Map<String, dynamic> map) {
     return Sale(
-      flavor: map['flavor'] as String,
-      quantity: map['quantity'] as int,
-      deliveryDate: (map['deliveryDate'] as Timestamp).toDate(),
-      delivered: map['delivered'] as bool? ?? false,
-      customerName: map['customerName'] as String,
-      profitFromSale: map['profitFromSale'] as double,
+      flavor: map['sabor'] as String,
+      quantity: map['quantidade'] as int,
+      deliveryDate: (map['dataPedido'] as Timestamp).toDate(),
+      delivered: map['entregue'] as bool? ?? false,
+      customerName: map['nomeCliente'] as String,
+      profitFromSale: map['lucroDaVenda'] as double,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'flavor': flavor,
-      'quantity': quantity,
-      'deliveryDate': deliveryDate,
-      'delivered': delivered,
-      'customerName': customerName,
-      'profitFromSale': profitFromSale,
+      'sabor': flavor,
+      'quantidade': quantity,
+      'dataPedido': deliveryDate,
+      'entregue': delivered,
+      'nomeCliente': customerName,
+      'lucroDaVenda': profitFromSale,
     };
   }
 }

@@ -6,15 +6,15 @@ class Ingredient {
 
   Map<String, dynamic> toMap() {
     return {
-      'name': name,
-      'cost': cost,
+      'nome': name,
+      'custo': cost,
     };
   }
 
   factory Ingredient.fromMap(Map<String, dynamic> data) {
     return Ingredient(
-      name: data['name'],
-      cost: data['cost'],
+      name: data['nome'],
+      cost: data['custo'],
     );
   }
 }

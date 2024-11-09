@@ -12,12 +12,12 @@ class SaleServiceImpl extends SaleService {
   Future<Either<Failure, void>> saveSale({required Sale sale}) async {
     try {
       final saleData = {
-        'flavor': sale.flavor,
-        'quantity': sale.quantity,
-        'deliveryDate': sale.deliveryDate,
-        'customerName': sale.customerName,
-        'delivered': sale.delivered,
-        'profitFromSale': sale.profitFromSale,
+        'sabor': sale.flavor,
+        'quantidade': sale.quantity,
+        'dataPedido': sale.deliveryDate,
+        'nomeCliente': sale.customerName,
+        'entregue': sale.delivered,
+        'lucroDaVenda': sale.profitFromSale,
       };
       await _saleCollection.add(saleData);
       return Right(null);

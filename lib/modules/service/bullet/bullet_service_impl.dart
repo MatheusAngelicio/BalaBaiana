@@ -11,11 +11,11 @@ class BulletServiceImpl extends BulletService {
   @override
   Future<Either<Failure, void>> saveBullet(Bullet bullet) async {
     final bulletData = {
-      'candyName': bullet.candyName,
-      'salePrice': bullet.salePrice,
-      'totalCost': bullet.totalCost,
-      'profit': bullet.profit,
-      'ingredients': bullet.ingredients.map((e) => e.toMap()).toList(),
+      'nomeBala': bullet.candyName,
+      'precoBala': bullet.salePrice,
+      'custoBala': bullet.totalCost,
+      'lucroBala': bullet.profit,
+      'ingredientes': bullet.ingredients.map((e) => e.toMap()).toList(),
     };
 
     try {
