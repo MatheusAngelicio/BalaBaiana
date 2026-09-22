@@ -71,7 +71,7 @@ class _ProductionFormPageState extends State<ProductionFormPage> {
         entry.key: TextEditingController(
           text: draft == null || (draft.extraCostsCents[entry.key] ?? 0) == 0
               ? ''
-              : formatCurrency(draft.extraCostsCents[entry.key]!),
+              : formatCurrencyInput(draft.extraCostsCents[entry.key]!),
         ),
     };
   }
@@ -271,6 +271,7 @@ class _ProductionFormPageState extends State<ProductionFormPage> {
                           controller: _extraCostControllers[entry.key],
                           keyboardType: const TextInputType.numberWithOptions(
                               decimal: true),
+                          inputFormatters: [CurrencyInputFormatter()],
                           onChanged: (_) => setState(() {}),
                           decoration: InputDecoration(
                             labelText: entry.value,

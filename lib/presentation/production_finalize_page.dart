@@ -111,7 +111,7 @@ class _FinalizeFormState extends State<_FinalizeForm> {
         entry.key: TextEditingController(
           text: defaults[entry.key] == 0
               ? ''
-              : formatCurrency(defaults[entry.key]!),
+              : formatCurrencyInput(defaults[entry.key]!),
         ),
     };
   }
@@ -306,6 +306,7 @@ class _FinalizeFormState extends State<_FinalizeForm> {
                   controller: _defaultCostControllers[entry.key],
                   keyboardType:
                       const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [CurrencyInputFormatter()],
                   onChanged: (_) => setState(() {}),
                   decoration: InputDecoration(
                     labelText: entry.value,

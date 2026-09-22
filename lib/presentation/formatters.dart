@@ -1,3 +1,5 @@
+import 'package:flutter/services.dart';
+
 String formatCurrency(int cents) {
   final sign = cents < 0 ? '-' : '';
   final value = cents.abs();
@@ -10,6 +12,39 @@ String formatCurrency(int cents) {
   }
 
   return '${sign}R\$ ${groups.reversed.join('.')},${(value % 100).toString().padLeft(2, '0')}';
+}
+
+String formatCurrencyInput(int cents) {
+  final value = cents.abs();
+  final whole = (value ~/ 100).toString();
+  final groups = <String>[];
+
+  for (var end = whole.length; end > 0; end -= 3) {
+    final start = end - 3 < 0 ? 0 : end - 3;
+    groups.add(whole.substring(start, end));
+  }
+
+  return '${groups.reversed.join('.')},${(value % 100).toString().padLeft(2, '0')}';
+}
+
+class CurrencyInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final digits = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
+    if (digits.isEmpty) return const TextEditingValue();
+
+    final cents = int.tryParse(digits);
+    if (cents == null) return oldValue;
+
+    final text = formatCurrencyInput(cents);
+    return TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+  }
 }
 
 String formatQuantity(double value) {

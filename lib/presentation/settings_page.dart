@@ -69,7 +69,7 @@ class _CostDefaultsFormState extends State<_CostDefaultsForm> {
         entry.key: TextEditingController(
           text: defaults[entry.key] == 0
               ? ''
-              : formatCurrency(defaults[entry.key]!),
+              : formatCurrencyInput(defaults[entry.key]!),
         ),
     };
   }
@@ -135,6 +135,7 @@ class _CostDefaultsFormState extends State<_CostDefaultsForm> {
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
+                  inputFormatters: [CurrencyInputFormatter()],
                   decoration: InputDecoration(
                     labelText: entry.value,
                     prefixText: 'R\$ ',

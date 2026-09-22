@@ -207,6 +207,7 @@ class _PurchaseFormPageState extends State<PurchaseFormPage> {
                 controller: _priceController,
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: [CurrencyInputFormatter()],
                 onChanged: (_) => setState(() {}),
                 decoration: const InputDecoration(
                   labelText: 'Preço total pago',
