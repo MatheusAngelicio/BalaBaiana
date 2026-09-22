@@ -20,28 +20,25 @@ class PurchaseFormPage extends StatefulWidget {
 }
 
 class _PurchaseFormPageState extends State<PurchaseFormPage> {
-  static const _newIngredientValue = '__new_ingredient__';
-
   final _formKey = GlobalKey<FormState>();
   final _ingredientNameController = TextEditingController();
   final _priceController = TextEditingController();
   final _quantityController = TextEditingController();
-  String _ingredientChoice = _newIngredientValue;
   MeasurementBase _newIngredientBase = MeasurementBase.gram;
   PurchaseUnit _purchaseUnit = PurchaseUnit.gram;
   DateTime _purchaseDate = DateTime.now();
   bool _isSaving = false;
 
-  bool get _isNewIngredient => _ingredientChoice == _newIngredientValue;
-
-  Ingredient? get _selectedIngredient {
+  Ingredient? get _existingIngredient {
+    final name = _ingredientNameController.text.trim().toLowerCase();
+    if (name.isEmpty) return null;
     for (final ingredient in widget.ingredients) {
-      if (ingredient.id == _ingredientChoice) return ingredient;
+      if (ingredient.name.toLowerCase() == name) return ingredient;
     }
     return null;
   }
 
-  MeasurementBase get _base => _selectedIngredient?.base ?? _newIngredientBase;
+  MeasurementBase get _base => _existingIngredient?.base ?? _newIngredientBase;
 
   List<PurchaseUnit> get _availableUnits =>
       PurchaseUnit.values.where((unit) => unit.base == _base).toList();
@@ -73,12 +70,13 @@ class _PurchaseFormPageState extends State<PurchaseFormPage> {
     setState(() => _isSaving = true);
 
     try {
-      final ingredientId = _isNewIngredient
+      final existingIngredient = _existingIngredient;
+      final ingredientId = existingIngredient == null
           ? await widget.repository.addIngredient(
               name: _ingredientNameController.text,
               base: _newIngredientBase,
             )
-          : _selectedIngredient!.id;
+          : existingIngredient.id;
 
       await widget.repository.addPurchase(
         ingredientId: ingredientId,
@@ -105,6 +103,14 @@ class _PurchaseFormPageState extends State<PurchaseFormPage> {
     }
   }
 
+  void _onIngredientNameChanged(String _) {
+    setState(() {
+      if (!_availableUnits.contains(_purchaseUnit)) {
+        _purchaseUnit = _availableUnits.first;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final previewPriceCents = parseCurrencyToCents(_priceController.text);
@@ -128,75 +134,70 @@ class _PurchaseFormPageState extends State<PurchaseFormPage> {
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 10),
-              DropdownButtonFormField<String>(
-                initialValue: _ingredientChoice,
-                decoration: const InputDecoration(border: OutlineInputBorder()),
-                items: [
-                  const DropdownMenuItem(
-                    value: _newIngredientValue,
-                    child: Text('+ Cadastrar novo ingrediente'),
-                  ),
-                  ...widget.ingredients.map(
-                    (ingredient) => DropdownMenuItem(
-                      value: ingredient.id,
-                      child: Text(ingredient.name),
-                    ),
-                  ),
-                ],
-                onChanged: (value) {
-                  if (value == null) return;
-                  setState(() {
-                    _ingredientChoice = value;
-                    _purchaseUnit = _availableUnits.first;
-                  });
-                },
-              ),
-              if (_isNewIngredient) ...[
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _ingredientNameController,
-                  textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(
-                    labelText: 'Nome do ingrediente',
-                    hintText: 'Ex.: Açúcar',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    final name = value?.trim() ?? '';
-                    if (name.isEmpty) return 'Informe o nome do ingrediente.';
-                    final duplicate = widget.ingredients.any(
-                      (ingredient) =>
-                          ingredient.name.toLowerCase() == name.toLowerCase(),
-                    );
-                    return duplicate
-                        ? 'Este ingrediente já existe. Selecione-o na lista.'
-                        : null;
-                  },
+              TextFormField(
+                controller: _ingredientNameController,
+                textCapitalization: TextCapitalization.words,
+                onChanged: _onIngredientNameChanged,
+                decoration: const InputDecoration(
+                  labelText: 'Nome do ingrediente',
+                  hintText: 'Ex.: Açúcar',
+                  border: OutlineInputBorder(),
                 ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<MeasurementBase>(
-                  initialValue: _newIngredientBase,
-                  decoration: const InputDecoration(
-                    labelText: 'Tipo de medida',
-                    border: OutlineInputBorder(),
+                validator: (value) => (value?.trim().isEmpty ?? true)
+                    ? 'Informe o nome do ingrediente.'
+                    : null,
+              ),
+              if (_existingIngredient != null) ...[
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondaryContainer,
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                  items: MeasurementBase.values
-                      .map(
-                        (base) => DropdownMenuItem(
-                          value: base,
-                          child: Text(base.label),
+                  child: const Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.check_circle_outline),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'Este ingrediente já foi registrado neste ciclo. A nova compra será adicionada a ele.',
                         ),
-                      )
-                      .toList(),
-                  onChanged: (base) {
-                    if (base == null) return;
-                    setState(() {
-                      _newIngredientBase = base;
-                      _purchaseUnit = _availableUnits.first;
-                    });
-                  },
+                      ),
+                    ],
+                  ),
                 ),
               ],
+              const SizedBox(height: 12),
+              DropdownButtonFormField<MeasurementBase>(
+                key: ValueKey(_base),
+                initialValue: _base,
+                decoration: InputDecoration(
+                  labelText: 'Tipo de medida',
+                  helperText: _existingIngredient == null
+                      ? null
+                      : 'Medida já definida para este ingrediente.',
+                  border: const OutlineInputBorder(),
+                ),
+                items: MeasurementBase.values
+                    .map(
+                      (base) => DropdownMenuItem(
+                        value: base,
+                        child: Text(base.label),
+                      ),
+                    )
+                    .toList(),
+                onChanged: _existingIngredient == null
+                    ? (base) {
+                        if (base == null) return;
+                        setState(() {
+                          _newIngredientBase = base;
+                          _purchaseUnit = _availableUnits.first;
+                        });
+                      }
+                    : null,
+              ),
               const SizedBox(height: 28),
               Text(
                 'Dados da compra',

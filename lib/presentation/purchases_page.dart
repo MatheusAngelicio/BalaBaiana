@@ -6,7 +6,6 @@ import '../domain/models/purchase.dart';
 import 'design_system.dart';
 import 'formatters.dart';
 import 'purchase_form_page.dart';
-import 'purchase_history_page.dart';
 
 class PurchasesPage extends StatelessWidget {
   const PurchasesPage({super.key, this.repository});
@@ -98,7 +97,7 @@ class _PurchasesContent extends StatelessWidget {
               const SectionHero(
                 palette: SectionColors.purchases,
                 title: 'Compras de ingredientes',
-                subtitle: 'Acompanhe preços e o histórico de cada item.',
+                subtitle: 'Acompanhe os preços usados no ciclo atual.',
               ),
               const SizedBox(height: 24),
               const SectionLabel(
@@ -124,19 +123,10 @@ class _PurchasesContent extends StatelessWidget {
                       subtitle: purchase == null
                           ? const Text('Nenhuma compra registrada ainda')
                           : Text(
-                              'Última: ${formatQuantity(purchase.quantity)} ${purchase.unit.label} por ${formatCurrency(purchase.priceCents)}\n'
+                              'Compra atual: ${formatQuantity(purchase.quantity)} ${purchase.unit.label} por ${formatCurrency(purchase.priceCents)}\n'
                               '${formatUnitCost(purchase.costPerBaseUnit)} por ${ingredient.base.symbol} • ${formatDate(purchase.purchasedAt)}',
                             ),
                       isThreeLine: purchase != null,
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => PurchaseHistoryPage(
-                            ingredient: ingredient,
-                            repository: repository,
-                          ),
-                        ),
-                      ),
                     ),
                   ),
                 );
