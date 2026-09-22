@@ -357,14 +357,85 @@ class _HistoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-        title: Text(production.name),
-        subtitle: Text(
-          '${production.yieldUnits} balas • ${formatDate(production.finalizedAt)}\n'
-          'Venda sugerida: ${formatCurrency(production.suggestedPriceCents)} por bala • Lucro: ${formatCurrency(production.profitPerUnitCents)} por bala',
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(production.name,
+                style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 4),
+            Text(
+                '${production.yieldUnits} balas • ${formatDate(production.finalizedAt)}'),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 14),
+              child: Divider(height: 1),
+            ),
+            _HistoryMetric(
+              label: 'Custo da produção',
+              value: formatCurrency(production.totalCostCents),
+            ),
+            _HistoryMetric(
+              label: 'Custo por bala',
+              value: formatCurrency(production.costPerUnitCents),
+            ),
+            _HistoryMetric(
+              label: 'Venda sugerida por bala',
+              value: formatCurrency(production.suggestedPriceCents),
+              highlight: true,
+            ),
+            _HistoryMetric(
+              label: 'Lucro por bala',
+              value: formatCurrency(production.profitPerUnitCents),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8),
+              child: Divider(height: 1),
+            ),
+            _HistoryMetric(
+              label: 'Venda estimada',
+              value: formatCurrency(production.estimatedRevenueCents),
+              highlight: true,
+            ),
+            _HistoryMetric(
+              label: 'Lucro estimado',
+              value: formatCurrency(production.estimatedProfitCents),
+              highlight: true,
+            ),
+          ],
         ),
-        isThreeLine: true,
+      ),
+    );
+  }
+}
+
+class _HistoryMetric extends StatelessWidget {
+  const _HistoryMetric({
+    required this.label,
+    required this.value,
+    this.highlight = false,
+  });
+
+  final String label;
+  final String value;
+  final bool highlight;
+
+  @override
+  Widget build(BuildContext context) {
+    final textStyle = highlight
+        ? Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.w700,
+            )
+        : Theme.of(context).textTheme.bodyMedium;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Expanded(child: Text(label)),
+          Text(value, style: textStyle),
+        ],
       ),
     );
   }

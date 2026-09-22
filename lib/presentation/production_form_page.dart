@@ -304,7 +304,7 @@ class _ProductionFormPageState extends State<ProductionFormPage> {
               ),
               const SizedBox(height: 10),
               const Text(
-                  'O rendimento e o preço de venda serão definidos na próxima etapa.'),
+                  'Salve a montagem para informar o rendimento e o preço de venda.'),
               const SizedBox(height: 28),
               FilledButton(
                 onPressed: _isSaving ? null : _save,
