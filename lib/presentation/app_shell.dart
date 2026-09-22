@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'home_page.dart';
-import 'placeholder_page.dart';
+import 'productions_page.dart';
 import 'purchases_page.dart';
+import 'recipes_page.dart';
 import 'settings_page.dart';
 
 class AppShell extends StatefulWidget {
@@ -26,16 +27,8 @@ class _AppShellState extends State<AppShell> {
     final pages = [
       HomePage(onNavigate: _selectTab),
       const PurchasesPage(),
-      const PlaceholderPage(
-        icon: Icons.menu_book_outlined,
-        title: 'Receitas',
-        description: 'Aqui ficarão as caldas, bases, recheios e sabores.',
-      ),
-      const PlaceholderPage(
-        icon: Icons.calculate_outlined,
-        title: 'Produções',
-        description: 'Aqui você calculará o custo e o preço de cada produção.',
-      ),
+      const RecipesPage(),
+      const ProductionsPage(),
     ];
 
     return Scaffold(
