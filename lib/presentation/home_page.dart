@@ -53,10 +53,10 @@ class HomePage extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           _ShortcutCard(
-            icon: Icons.history_outlined,
+            icon: Icons.calculate_outlined,
             color: SectionColors.productions.start,
-            title: 'Ver histórico',
-            description: 'Confira as produções já calculadas.',
+            title: 'Ir para produções',
+            description: 'Monte uma produção ou consulte o histórico.',
             onTap: () => onNavigate(3),
           ),
           const SizedBox(height: 12),
