@@ -28,6 +28,74 @@ class ProductionsPage extends StatelessWidget {
   final FillingsRepository? fillingsRepository;
   final ProductionsRepository? productionsRepository;
 
+  void _openSection(BuildContext context, ProductionSection section) {
+    final title = switch (section) {
+      ProductionSection.assembly => 'Montar produção',
+      ProductionSection.history => 'Histórico de produções',
+    };
+
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => Scaffold(
+          appBar: AppBar(title: Text(title)),
+          body: ProductionWorkspacePage(
+            section: section,
+            purchasesRepository: purchasesRepository,
+            recipeBasesRepository: recipeBasesRepository,
+            fillingsRepository: fillingsRepository,
+            productionsRepository: productionsRepository,
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+      children: [
+        Text('Produções', style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 4),
+        const Text('Escolha o que você deseja fazer.'),
+        const SizedBox(height: 24),
+        _ProductionDestinationCard(
+          icon: Icons.calculate_outlined,
+          title: 'Montar produção',
+          description:
+              'Combine calda, base e recheio para calcular e precificar.',
+          onTap: () => _openSection(context, ProductionSection.assembly),
+        ),
+        const SizedBox(height: 12),
+        _ProductionDestinationCard(
+          icon: Icons.history_outlined,
+          title: 'Histórico de produções',
+          description: 'Consulte os custos, preços e lucros já registrados.',
+          onTap: () => _openSection(context, ProductionSection.history),
+        ),
+      ],
+    );
+  }
+}
+
+enum ProductionSection { assembly, history }
+
+class ProductionWorkspacePage extends StatelessWidget {
+  const ProductionWorkspacePage({
+    super.key,
+    required this.section,
+    this.purchasesRepository,
+    this.recipeBasesRepository,
+    this.fillingsRepository,
+    this.productionsRepository,
+  });
+
+  final ProductionSection section;
+  final PurchasesRepository? purchasesRepository;
+  final RecipeBasesRepository? recipeBasesRepository;
+  final FillingsRepository? fillingsRepository;
+  final ProductionsRepository? productionsRepository;
+
   @override
   Widget build(BuildContext context) {
     final purchases = purchasesRepository ?? PurchasesRepository();
@@ -78,6 +146,7 @@ class ProductionsPage extends StatelessWidget {
                               child: CircularProgressIndicator());
                         }
                         return _ProductionsContent(
+                          section: section,
                           purchases: purchasesSnapshot.data!,
                           recipes: recipesSnapshot.data!,
                           fillings: fillingsSnapshot.data!,
@@ -100,6 +169,7 @@ class ProductionsPage extends StatelessWidget {
 
 class _ProductionsContent extends StatelessWidget {
   const _ProductionsContent({
+    required this.section,
     required this.purchases,
     required this.recipes,
     required this.fillings,
@@ -108,6 +178,7 @@ class _ProductionsContent extends StatelessWidget {
     required this.productionsRepository,
   });
 
+  final ProductionSection section;
   final List<Purchase> purchases;
   final List<RecipeBase> recipes;
   final List<Filling> fillings;
@@ -175,61 +246,105 @@ class _ProductionsContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isAssembly = section == ProductionSection.assembly;
     return Column(
       children: [
         Expanded(
           child: ListView(
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
             children: [
-              Text('Montagens de produção',
+              Text(
+                  isAssembly
+                      ? 'Montagens de produção'
+                      : 'Produções finalizadas',
                   style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 4),
-              const Text(
-                  'Combine calda, base e recheio para calcular o custo.'),
+              Text(
+                isAssembly
+                    ? 'Combine calda, base e recheio para calcular o custo.'
+                    : 'Consulte os valores calculados em cada produção.',
+              ),
               const SizedBox(height: 20),
-              if (drafts.isEmpty)
-                const _EmptyDrafts()
-              else
-                ...drafts.map(
-                  (draft) => Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: _DraftCard(
-                      draft: draft,
-                      recipes: recipes,
-                      fillings: fillings,
-                      purchases: purchases,
-                      onTap: () => _openForm(context, draft: draft),
-                      onFinalize: () => _finalizeDraft(context, draft),
+              if (isAssembly) ...[
+                if (drafts.isEmpty)
+                  const _EmptyDrafts()
+                else
+                  ...drafts.map(
+                    (draft) => Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: _DraftCard(
+                        draft: draft,
+                        recipes: recipes,
+                        fillings: fillings,
+                        purchases: purchases,
+                        onTap: () => _openForm(context, draft: draft),
+                        onFinalize: () => _finalizeDraft(context, draft),
+                      ),
                     ),
                   ),
-                ),
-              const SizedBox(height: 24),
-              Text('Histórico', style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 10),
-              if (history.isEmpty)
-                const Text('Nenhuma produção finalizada ainda.')
-              else
+              ] else if (history.isEmpty) ...[
+                const _EmptyHistory(),
+              ] else ...[
                 ...history.map(
                   (production) => Padding(
                     padding: const EdgeInsets.only(bottom: 10),
                     child: _HistoryCard(production: production),
                   ),
                 ),
+              ],
             ],
           ),
         ),
-        SafeArea(
-          top: false,
-          minimum: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          child: FilledButton.icon(
-            onPressed: () => _openForm(context),
-            icon: const Icon(Icons.add),
-            label: const Text('Montar nova produção'),
-            style:
-                FilledButton.styleFrom(minimumSize: const Size.fromHeight(56)),
+        if (isAssembly)
+          SafeArea(
+            top: false,
+            minimum: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            child: FilledButton.icon(
+              onPressed: () => _openForm(context),
+              icon: const Icon(Icons.add),
+              label: const Text('Montar nova produção'),
+              style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(56)),
+            ),
           ),
-        ),
       ],
+    );
+  }
+}
+
+class _ProductionDestinationCard extends StatelessWidget {
+  const _ProductionDestinationCard({
+    required this.icon,
+    required this.title,
+    required this.description,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String description;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: ListTile(
+        contentPadding: const EdgeInsets.all(16),
+        leading: CircleAvatar(
+          backgroundColor: colors.primaryContainer,
+          foregroundColor: colors.onPrimaryContainer,
+          child: Icon(icon),
+        ),
+        title: Text(title),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Text(description),
+        ),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: onTap,
+      ),
     );
   }
 }
@@ -251,6 +366,31 @@ class _EmptyDrafts extends StatelessWidget {
           const SizedBox(height: 8),
           const Text(
             'Crie uma montagem para combinar as partes da bala e calcular o custo.',
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EmptyHistory extends StatelessWidget {
+  const _EmptyHistory();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 48),
+      child: Column(
+        children: [
+          Icon(Icons.history_outlined,
+              size: 60, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(height: 16),
+          Text('Nenhuma produção finalizada',
+              style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 8),
+          const Text(
+            'As produções aparecerão aqui depois de informar o rendimento e finalizar.',
             textAlign: TextAlign.center,
           ),
         ],
