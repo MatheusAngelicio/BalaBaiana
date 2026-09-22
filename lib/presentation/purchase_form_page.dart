@@ -24,7 +24,6 @@ class _PurchaseFormPageState extends State<PurchaseFormPage> {
   final _ingredientNameController = TextEditingController();
   final _priceController = TextEditingController();
   final _quantityController = TextEditingController();
-  MeasurementBase _newIngredientBase = MeasurementBase.gram;
   PurchaseUnit _purchaseUnit = PurchaseUnit.gram;
   DateTime _purchaseDate = DateTime.now();
   bool _isSaving = false;
@@ -38,10 +37,15 @@ class _PurchaseFormPageState extends State<PurchaseFormPage> {
     return null;
   }
 
-  MeasurementBase get _base => _existingIngredient?.base ?? _newIngredientBase;
+  MeasurementBase get _base => _existingIngredient?.base ?? _purchaseUnit.base;
 
-  List<PurchaseUnit> get _availableUnits =>
-      PurchaseUnit.values.where((unit) => unit.base == _base).toList();
+  List<PurchaseUnit> get _availableUnits {
+    final existingIngredient = _existingIngredient;
+    if (existingIngredient == null) return PurchaseUnit.values;
+    return PurchaseUnit.values
+        .where((unit) => unit.base == existingIngredient.base)
+        .toList();
+  }
 
   @override
   void dispose() {
@@ -74,7 +78,7 @@ class _PurchaseFormPageState extends State<PurchaseFormPage> {
       final ingredientId = existingIngredient == null
           ? await widget.repository.addIngredient(
               name: _ingredientNameController.text,
-              base: _newIngredientBase,
+              base: _purchaseUnit.base,
             )
           : existingIngredient.id;
 
@@ -169,35 +173,6 @@ class _PurchaseFormPageState extends State<PurchaseFormPage> {
                   ),
                 ),
               ],
-              const SizedBox(height: 12),
-              DropdownButtonFormField<MeasurementBase>(
-                key: ValueKey(_base),
-                initialValue: _base,
-                decoration: InputDecoration(
-                  labelText: 'Tipo de medida',
-                  helperText: _existingIngredient == null
-                      ? null
-                      : 'Medida já definida para este ingrediente.',
-                  border: const OutlineInputBorder(),
-                ),
-                items: MeasurementBase.values
-                    .map(
-                      (base) => DropdownMenuItem(
-                        value: base,
-                        child: Text(base.label),
-                      ),
-                    )
-                    .toList(),
-                onChanged: _existingIngredient == null
-                    ? (base) {
-                        if (base == null) return;
-                        setState(() {
-                          _newIngredientBase = base;
-                          _purchaseUnit = _availableUnits.first;
-                        });
-                      }
-                    : null,
-              ),
               const SizedBox(height: 28),
               Text(
                 'Dados da compra',
@@ -243,12 +218,12 @@ class _PurchaseFormPageState extends State<PurchaseFormPage> {
                   ),
                   const SizedBox(width: 12),
                   SizedBox(
-                    width: 116,
+                    width: 132,
                     child: DropdownButtonFormField<PurchaseUnit>(
                       key: ValueKey(_base),
                       initialValue: _purchaseUnit,
                       decoration: const InputDecoration(
-                        labelText: 'Unidade',
+                        labelText: 'Unidade da compra',
                         border: OutlineInputBorder(),
                       ),
                       items: _availableUnits
@@ -265,6 +240,13 @@ class _PurchaseFormPageState extends State<PurchaseFormPage> {
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _existingIngredient == null
+                    ? 'A unidade escolhida definirá como este ingrediente será usado nas receitas.'
+                    : 'Este ingrediente é usado em ${_base.label} nas receitas.',
+                style: Theme.of(context).textTheme.bodySmall,
               ),
               if (unitCostPreview != null) ...[
                 const SizedBox(height: 12),
