@@ -96,13 +96,18 @@ class _RecipesContent extends StatelessWidget {
   final RecipeBasesRepository recipeBasesRepository;
   final FillingsRepository fillingsRepository;
 
-  void _openForm(BuildContext context, {RecipeBase? recipe}) {
+  void _openRecipeForm(
+    BuildContext context, {
+    required RecipeBaseType type,
+    RecipeBase? recipe,
+  }) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => RecipeBaseFormPage(
           ingredients: ingredients,
           purchases: purchases,
           recipeBasesRepository: recipeBasesRepository,
+          type: type,
           recipe: recipe,
         ),
       ),
@@ -147,13 +152,22 @@ class _RecipesContent extends StatelessWidget {
                 icon: Icons.water_drop_outlined,
                 recipes: syrups,
                 purchases: purchases,
-                onTap: (recipe) => _openForm(context, recipe: recipe),
+                onTap: (recipe) => _openRecipeForm(
+                  context,
+                  type: RecipeBaseType.syrup,
+                  recipe: recipe,
+                ),
+                onAdd: () => _openRecipeForm(
+                  context,
+                  type: RecipeBaseType.syrup,
+                ),
               ),
               const SizedBox(height: 24),
               _FillingSection(
                 fillings: fillings,
                 purchases: purchases,
                 onTap: (filling) => _openFillingForm(context, filling: filling),
+                onAdd: () => _openFillingForm(context),
               ),
               const SizedBox(height: 24),
               _RecipeSection(
@@ -162,32 +176,14 @@ class _RecipesContent extends StatelessWidget {
                 icon: Icons.layers_outlined,
                 recipes: bases,
                 purchases: purchases,
-                onTap: (recipe) => _openForm(context, recipe: recipe),
-              ),
-            ],
-          ),
-        ),
-        SafeArea(
-          top: false,
-          minimum: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              OutlinedButton.icon(
-                onPressed: () => _openFillingForm(context),
-                icon: const Icon(Icons.add),
-                label: const Text('Cadastrar recheio'),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(52),
+                onTap: (recipe) => _openRecipeForm(
+                  context,
+                  type: RecipeBaseType.base,
+                  recipe: recipe,
                 ),
-              ),
-              const SizedBox(height: 8),
-              FilledButton.icon(
-                onPressed: () => _openForm(context),
-                icon: const Icon(Icons.add),
-                label: const Text('Cadastrar receita-base'),
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(56),
+                onAdd: () => _openRecipeForm(
+                  context,
+                  type: RecipeBaseType.base,
                 ),
               ),
             ],
@@ -206,6 +202,7 @@ class _RecipeSection extends StatelessWidget {
     required this.recipes,
     required this.purchases,
     required this.onTap,
+    required this.onAdd,
   });
 
   final String title;
@@ -214,13 +211,20 @@ class _RecipeSection extends StatelessWidget {
   final List<RecipeBase> recipes;
   final List<Purchase> purchases;
   final ValueChanged<RecipeBase> onTap;
+  final VoidCallback onAdd;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SectionLabel(label: title, color: color, icon: icon),
+        SectionLabel(
+          label: title,
+          color: color,
+          icon: icon,
+          onAdd: onAdd,
+          addTooltip: 'Cadastrar $title',
+        ),
         const SizedBox(height: 10),
         if (recipes.isEmpty)
           Text('Nenhuma $title cadastrada ainda.')
@@ -302,21 +306,25 @@ class _FillingSection extends StatelessWidget {
     required this.fillings,
     required this.purchases,
     required this.onTap,
+    required this.onAdd,
   });
 
   final List<Filling> fillings;
   final List<Purchase> purchases;
   final ValueChanged<Filling> onTap;
+  final VoidCallback onAdd;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionLabel(
+        SectionLabel(
           label: 'Recheios e sabores',
-          color: Color(0xFFC65C7A),
+          color: const Color(0xFFC65C7A),
           icon: Icons.favorite_outline,
+          onAdd: onAdd,
+          addTooltip: 'Cadastrar recheio ou sabor',
         ),
         const SizedBox(height: 10),
         if (fillings.isEmpty)

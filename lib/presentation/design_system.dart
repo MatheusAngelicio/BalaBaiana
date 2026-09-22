@@ -118,12 +118,16 @@ class SectionLabel extends StatelessWidget {
     required this.label,
     required this.color,
     required this.icon,
+    this.onAdd,
+    this.addTooltip = 'Adicionar',
     super.key,
   });
 
   final String label;
   final Color color;
   final IconData icon;
+  final VoidCallback? onAdd;
+  final String addTooltip;
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +142,16 @@ class SectionLabel extends StatelessWidget {
           child: Icon(icon, color: color, size: 20),
         ),
         const SizedBox(width: 10),
-        Text(label, style: Theme.of(context).textTheme.titleMedium),
+        Expanded(
+          child: Text(label, style: Theme.of(context).textTheme.titleMedium),
+        ),
+        if (onAdd != null)
+          IconButton.filledTonal(
+            onPressed: onAdd,
+            tooltip: addTooltip,
+            icon: const Icon(Icons.add),
+            color: color,
+          ),
       ],
     );
   }

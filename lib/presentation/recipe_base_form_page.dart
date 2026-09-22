@@ -11,6 +11,7 @@ class RecipeBaseFormPage extends StatefulWidget {
     required this.ingredients,
     required this.purchases,
     required this.recipeBasesRepository,
+    required this.type,
     super.key,
     this.recipe,
   });
@@ -18,6 +19,7 @@ class RecipeBaseFormPage extends StatefulWidget {
   final List<Ingredient> ingredients;
   final List<Purchase> purchases;
   final RecipeBasesRepository recipeBasesRepository;
+  final RecipeBaseType type;
   final RecipeBase? recipe;
 
   @override
@@ -28,7 +30,6 @@ class _RecipeBaseFormPageState extends State<RecipeBaseFormPage> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _yieldController;
-  late RecipeBaseType _type;
   late MeasurementBase _yieldUnit;
   late List<RecipeIngredientUsage> _ingredientUsages;
   bool _isSaving = false;
@@ -41,7 +42,6 @@ class _RecipeBaseFormPageState extends State<RecipeBaseFormPage> {
     _yieldController = TextEditingController(
       text: recipe == null ? '' : formatQuantity(recipe.yieldQuantity),
     );
-    _type = recipe?.type ?? RecipeBaseType.syrup;
     _yieldUnit = recipe?.yieldUnit ?? MeasurementBase.gram;
     _ingredientUsages = List.of(recipe?.ingredients ?? const []);
   }
@@ -103,7 +103,7 @@ class _RecipeBaseFormPageState extends State<RecipeBaseFormPage> {
         RecipeBase(
           id: widget.recipe?.id ?? '',
           name: _nameController.text,
-          type: _type,
+          type: widget.type,
           yieldQuantity: parsePositiveNumber(_yieldController.text)!,
           yieldUnit: _yieldUnit,
           ingredients: _ingredientUsages,
@@ -147,9 +147,11 @@ class _RecipeBaseFormPageState extends State<RecipeBaseFormPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.recipe == null
-            ? 'Nova receita-base'
-            : 'Editar receita-base'),
+        title: Text(
+          widget.recipe == null
+              ? 'Nova ${widget.type.label.toLowerCase()}'
+              : 'Editar ${widget.type.label.toLowerCase()}',
+        ),
       ),
       body: SafeArea(
         child: Form(
@@ -160,29 +162,16 @@ class _RecipeBaseFormPageState extends State<RecipeBaseFormPage> {
               TextFormField(
                 controller: _nameController,
                 textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(
-                  labelText: 'Nome da receita',
-                  hintText: 'Ex.: Calda tradicional',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: 'Nome da ${widget.type.label.toLowerCase()}',
+                  hintText: widget.type == RecipeBaseType.syrup
+                      ? 'Ex.: Calda tradicional'
+                      : 'Ex.: Base cremosa',
+                  border: const OutlineInputBorder(),
                 ),
                 validator: (value) => (value?.trim().isEmpty ?? true)
                     ? 'Informe o nome da receita.'
                     : null,
-              ),
-              const SizedBox(height: 16),
-              SegmentedButton<RecipeBaseType>(
-                segments: RecipeBaseType.values
-                    .map(
-                      (type) => ButtonSegment<RecipeBaseType>(
-                        value: type,
-                        label: Text(type.label),
-                      ),
-                    )
-                    .toList(),
-                selected: {_type},
-                onSelectionChanged: (selected) {
-                  setState(() => _type = selected.first);
-                },
               ),
               const SizedBox(height: 28),
               Text('Ingredientes',
@@ -306,7 +295,7 @@ class _RecipeBaseFormPageState extends State<RecipeBaseFormPage> {
                         width: 24,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Salvar receita-base'),
+                    : Text('Salvar ${widget.type.label.toLowerCase()}'),
               ),
             ],
           ),
