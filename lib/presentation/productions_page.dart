@@ -10,6 +10,7 @@ import '../domain/models/production_draft.dart';
 import '../domain/models/purchase.dart';
 import '../domain/models/recipe_base.dart';
 import '../domain/services/cost_calculator.dart';
+import 'design_system.dart';
 import 'formatters.dart';
 import 'production_form_page.dart';
 import 'production_finalize_page.dart';
@@ -55,12 +56,21 @@ class ProductionsPage extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
       children: [
-        Text('Produções', style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 4),
-        const Text('Escolha o que você deseja fazer.'),
+        const SectionHero(
+          palette: SectionColors.productions,
+          title: 'Produções',
+          subtitle: 'Monte receitas, veja custos e acompanhe seus resultados.',
+        ),
         const SizedBox(height: 24),
+        const SectionLabel(
+          label: 'O que você quer fazer?',
+          color: Color(0xFF7253A8),
+          icon: Icons.auto_awesome_outlined,
+        ),
+        const SizedBox(height: 12),
         _ProductionDestinationCard(
           icon: Icons.calculate_outlined,
+          color: SectionColors.productions.start,
           title: 'Montar produção',
           description:
               'Combine calda, base e recheio para calcular e precificar.',
@@ -69,6 +79,7 @@ class ProductionsPage extends StatelessWidget {
         const SizedBox(height: 12),
         _ProductionDestinationCard(
           icon: Icons.history_outlined,
+          color: const Color(0xFF4F7F9A),
           title: 'Histórico de produções',
           description: 'Consulte os custos, preços e lucros já registrados.',
           onTap: () => _openSection(context, ProductionSection.history),
@@ -253,18 +264,14 @@ class _ProductionsContent extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
             children: [
-              Text(
-                  isAssembly
-                      ? 'Montagens de produção'
-                      : 'Produções finalizadas',
-                  style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 4),
-              Text(
-                isAssembly
-                    ? 'Combine calda, base e recheio para calcular o custo.'
-                    : 'Consulte os valores calculados em cada produção.',
+              SectionHero(
+                palette: SectionColors.productions,
+                title: isAssembly ? 'Montar produção' : 'Histórico',
+                subtitle: isAssembly
+                    ? 'Combine as partes e descubra o custo da receita.'
+                    : 'Consulte custos, preços e lucros já registrados.',
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
               if (isAssembly) ...[
                 if (drafts.isEmpty)
                   const _EmptyDrafts()
@@ -315,26 +322,27 @@ class _ProductionsContent extends StatelessWidget {
 class _ProductionDestinationCard extends StatelessWidget {
   const _ProductionDestinationCard({
     required this.icon,
+    required this.color,
     required this.title,
     required this.description,
     required this.onTap,
   });
 
   final IconData icon;
+  final Color color;
   final String title;
   final String description;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     return Card(
       clipBehavior: Clip.antiAlias,
       child: ListTile(
         contentPadding: const EdgeInsets.all(16),
         leading: CircleAvatar(
-          backgroundColor: colors.primaryContainer,
-          foregroundColor: colors.onPrimaryContainer,
+          backgroundColor: color.withValues(alpha: 0.14),
+          foregroundColor: color,
           child: Icon(icon),
         ),
         title: Text(title),

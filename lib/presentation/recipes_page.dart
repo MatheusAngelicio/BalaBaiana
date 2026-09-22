@@ -7,6 +7,7 @@ import '../domain/models/filling.dart';
 import '../domain/models/ingredient.dart';
 import '../domain/models/purchase.dart';
 import '../domain/models/recipe_base.dart';
+import 'design_system.dart';
 import 'formatters.dart';
 import 'filling_form_page.dart';
 import 'recipe_base_form_page.dart';
@@ -134,14 +135,16 @@ class _RecipesContent extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
             children: [
-              Text('Receitas-base',
-                  style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 4),
-              const Text(
-                  'Cadastre caldas e bases para reutilizar nas produções.'),
+              const SectionHero(
+                palette: SectionColors.recipes,
+                title: 'Receitas e sabores',
+                subtitle: 'Deixe caldas, bases e recheios prontos para usar.',
+              ),
               const SizedBox(height: 24),
               _RecipeSection(
                 title: 'Caldas',
+                color: const Color(0xFFC78021),
+                icon: Icons.water_drop_outlined,
                 recipes: syrups,
                 purchases: purchases,
                 onTap: (recipe) => _openForm(context, recipe: recipe),
@@ -155,6 +158,8 @@ class _RecipesContent extends StatelessWidget {
               const SizedBox(height: 24),
               _RecipeSection(
                 title: 'Bases',
+                color: const Color(0xFF8B5C9D),
+                icon: Icons.layers_outlined,
                 recipes: bases,
                 purchases: purchases,
                 onTap: (recipe) => _openForm(context, recipe: recipe),
@@ -196,12 +201,16 @@ class _RecipesContent extends StatelessWidget {
 class _RecipeSection extends StatelessWidget {
   const _RecipeSection({
     required this.title,
+    required this.color,
+    required this.icon,
     required this.recipes,
     required this.purchases,
     required this.onTap,
   });
 
   final String title;
+  final Color color;
+  final IconData icon;
   final List<RecipeBase> recipes;
   final List<Purchase> purchases;
   final ValueChanged<RecipeBase> onTap;
@@ -211,7 +220,7 @@ class _RecipeSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: Theme.of(context).textTheme.titleMedium),
+        SectionLabel(label: title, color: color, icon: icon),
         const SizedBox(height: 10),
         if (recipes.isEmpty)
           Text('Nenhuma $title cadastrada ainda.')
@@ -221,6 +230,7 @@ class _RecipeSection extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 10),
               child: _RecipeCard(
                 recipe: recipe,
+                color: color,
                 purchases: purchases,
                 onTap: () => onTap(recipe),
               ),
@@ -234,11 +244,13 @@ class _RecipeSection extends StatelessWidget {
 class _RecipeCard extends StatelessWidget {
   const _RecipeCard({
     required this.recipe,
+    required this.color,
     required this.purchases,
     required this.onTap,
   });
 
   final RecipeBase recipe;
+  final Color color;
   final List<Purchase> purchases;
   final VoidCallback onTap;
 
@@ -263,6 +275,13 @@ class _RecipeCard extends StatelessWidget {
     return Card(
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+        leading: CircleAvatar(
+          backgroundColor: color.withValues(alpha: 0.14),
+          foregroundColor: color,
+          child: Icon(recipe.type == RecipeBaseType.syrup
+              ? Icons.water_drop_outlined
+              : Icons.layers_outlined),
+        ),
         title: Text(recipe.name),
         subtitle: Text(
           hasMissingPurchase
@@ -294,8 +313,11 @@ class _FillingSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Recheios e sabores',
-            style: Theme.of(context).textTheme.titleMedium),
+        const SectionLabel(
+          label: 'Recheios e sabores',
+          color: Color(0xFFC65C7A),
+          icon: Icons.favorite_outline,
+        ),
         const SizedBox(height: 10),
         if (fillings.isEmpty)
           const Text('Nenhum recheio cadastrado ainda.')
@@ -345,6 +367,11 @@ class _FillingCard extends StatelessWidget {
     return Card(
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+        leading: const CircleAvatar(
+          backgroundColor: Color(0xFFFFE0E9),
+          foregroundColor: Color(0xFFC65C7A),
+          child: Icon(Icons.favorite_outline),
+        ),
         title: Text(filling.name),
         subtitle: Text(
           hasMissingPurchase

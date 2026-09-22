@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../data/purchases_repository.dart';
 import '../domain/models/ingredient.dart';
 import '../domain/models/purchase.dart';
+import 'design_system.dart';
 import 'formatters.dart';
 import 'purchase_form_page.dart';
 import 'purchase_history_page.dart';
@@ -94,12 +95,18 @@ class _PurchasesContent extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
             children: [
-              Text('Compras de ingredientes',
-                  style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 4),
-              const Text(
-                  'Consulte o último preço e o histórico de cada ingrediente.'),
-              const SizedBox(height: 16),
+              const SectionHero(
+                palette: SectionColors.purchases,
+                title: 'Compras de ingredientes',
+                subtitle: 'Acompanhe preços e o histórico de cada item.',
+              ),
+              const SizedBox(height: 24),
+              const SectionLabel(
+                label: 'Ingredientes cadastrados',
+                color: Color(0xFF3C8061),
+                icon: Icons.inventory_2_outlined,
+              ),
+              const SizedBox(height: 12),
               ...ingredients.map((ingredient) {
                 final purchase = latestPurchaseByIngredient[ingredient.id];
                 return Padding(
@@ -108,6 +115,11 @@ class _PurchasesContent extends StatelessWidget {
                     child: ListTile(
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 18, vertical: 8),
+                      leading: CircleAvatar(
+                        backgroundColor: SectionColors.purchases.soft,
+                        foregroundColor: SectionColors.purchases.end,
+                        child: const Icon(Icons.shopping_basket_outlined),
+                      ),
                       title: Text(ingredient.name),
                       subtitle: purchase == null
                           ? const Text('Nenhuma compra registrada ainda')
@@ -162,7 +174,7 @@ class _EmptyPurchases extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.shopping_bag_outlined,
-                size: 60, color: Theme.of(context).colorScheme.primary),
+                size: 60, color: SectionColors.purchases.start),
             const SizedBox(height: 18),
             Text('Nenhuma compra registrada',
                 style: Theme.of(context).textTheme.titleLarge),
