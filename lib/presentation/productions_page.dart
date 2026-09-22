@@ -5,12 +5,14 @@ import '../data/productions_repository.dart';
 import '../data/purchases_repository.dart';
 import '../data/recipe_bases_repository.dart';
 import '../domain/models/filling.dart';
+import '../domain/models/finalized_production.dart';
 import '../domain/models/production_draft.dart';
 import '../domain/models/purchase.dart';
 import '../domain/models/recipe_base.dart';
 import '../domain/services/cost_calculator.dart';
 import 'formatters.dart';
 import 'production_form_page.dart';
+import 'production_finalize_page.dart';
 
 class ProductionsPage extends StatelessWidget {
   const ProductionsPage({
@@ -65,12 +67,25 @@ class ProductionsPage extends StatelessWidget {
                     if (!draftsSnapshot.hasData) {
                       return const Center(child: CircularProgressIndicator());
                     }
-                    return _ProductionsContent(
-                      purchases: purchasesSnapshot.data!,
-                      recipes: recipesSnapshot.data!,
-                      fillings: fillingsSnapshot.data!,
-                      drafts: draftsSnapshot.data!,
-                      productionsRepository: productions,
+                    return StreamBuilder<List<FinalizedProduction>>(
+                      stream: productions.watchFinalizedProductions(),
+                      builder: (context, historySnapshot) {
+                        if (historySnapshot.hasError) {
+                          return const _ProductionLoadError();
+                        }
+                        if (!historySnapshot.hasData) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        return _ProductionsContent(
+                          purchases: purchasesSnapshot.data!,
+                          recipes: recipesSnapshot.data!,
+                          fillings: fillingsSnapshot.data!,
+                          drafts: draftsSnapshot.data!,
+                          history: historySnapshot.data!,
+                          productionsRepository: productions,
+                        );
+                      },
                     );
                   },
                 );
@@ -89,6 +104,7 @@ class _ProductionsContent extends StatelessWidget {
     required this.recipes,
     required this.fillings,
     required this.drafts,
+    required this.history,
     required this.productionsRepository,
   });
 
@@ -96,6 +112,7 @@ class _ProductionsContent extends StatelessWidget {
   final List<RecipeBase> recipes;
   final List<Filling> fillings;
   final List<ProductionDraft> drafts;
+  final List<FinalizedProduction> history;
   final ProductionsRepository productionsRepository;
 
   void _openForm(BuildContext context, {ProductionDraft? draft}) {
@@ -112,6 +129,45 @@ class _ProductionsContent extends StatelessWidget {
           purchases: purchases,
           productionsRepository: productionsRepository,
           draft: draft,
+        ),
+      ),
+    );
+  }
+
+  void _finalizeDraft(BuildContext context, ProductionDraft draft) {
+    RecipeBase? findRecipe(String id) {
+      for (final recipe in recipes) {
+        if (recipe.id == id) return recipe;
+      }
+      return null;
+    }
+
+    Filling? findFilling(String id) {
+      for (final filling in fillings) {
+        if (filling.id == id) return filling;
+      }
+      return null;
+    }
+
+    final syrup = findRecipe(draft.syrup.recipeId);
+    final base = findRecipe(draft.base.recipeId);
+    final filling = findFilling(draft.filling.recipeId);
+    if (syrup == null || base == null || filling == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Revise as receitas usadas antes de finalizar.')),
+      );
+      return;
+    }
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => ProductionFinalizePage(
+          draft: draft,
+          syrup: syrup,
+          base: base,
+          filling: filling,
+          purchases: purchases,
+          productionsRepository: productionsRepository,
         ),
       ),
     );
@@ -143,7 +199,20 @@ class _ProductionsContent extends StatelessWidget {
                       fillings: fillings,
                       purchases: purchases,
                       onTap: () => _openForm(context, draft: draft),
+                      onFinalize: () => _finalizeDraft(context, draft),
                     ),
+                  ),
+                ),
+              const SizedBox(height: 24),
+              Text('Histórico', style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 10),
+              if (history.isEmpty)
+                const Text('Nenhuma produção finalizada ainda.')
+              else
+                ...history.map(
+                  (production) => Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: _HistoryCard(production: production),
                   ),
                 ),
             ],
@@ -197,6 +266,7 @@ class _DraftCard extends StatelessWidget {
     required this.fillings,
     required this.purchases,
     required this.onTap,
+    required this.onFinalize,
   });
 
   final ProductionDraft draft;
@@ -204,6 +274,7 @@ class _DraftCard extends StatelessWidget {
   final List<Filling> fillings;
   final List<Purchase> purchases;
   final VoidCallback onTap;
+  final VoidCallback onFinalize;
 
   @override
   Widget build(BuildContext context) {
@@ -245,17 +316,55 @@ class _DraftCard extends StatelessWidget {
         (syrupCost ?? 0) + (baseCost ?? 0) + (fillingCost ?? 0) + extras;
 
     return Card(
+      child: Column(
+        children: [
+          ListTile(
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+            title: Text(draft.name),
+            subtitle: Text(
+              hasCurrentCost
+                  ? 'Custo atual: ${formatCurrency((total * 100).round())}\nAguardando rendimento e preço de venda.'
+                  : 'Uma das receitas ou compras usadas precisa ser revisada.',
+            ),
+            isThreeLine: hasCurrentCost,
+            trailing: const Icon(Icons.chevron_right),
+            onTap: onTap,
+          ),
+          if (hasCurrentCost)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              child: SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: onFinalize,
+                  icon: const Icon(Icons.check_circle_outline),
+                  label: const Text('Informar rendimento e finalizar'),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HistoryCard extends StatelessWidget {
+  const _HistoryCard({required this.production});
+
+  final FinalizedProduction production;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-        title: Text(draft.name),
+        title: Text(production.name),
         subtitle: Text(
-          hasCurrentCost
-              ? 'Custo atual: ${formatCurrency((total * 100).round())}\nAguardando rendimento e preço de venda.'
-              : 'Uma das receitas ou compras usadas precisa ser revisada.',
+          '${production.yieldUnits} balas • ${formatDate(production.finalizedAt)}\n'
+          'Venda sugerida: ${formatCurrency(production.suggestedPriceCents)} por bala • Lucro: ${formatCurrency(production.profitPerUnitCents)} por bala',
         ),
-        isThreeLine: hasCurrentCost,
-        trailing: const Icon(Icons.chevron_right),
-        onTap: onTap,
+        isThreeLine: true,
       ),
     );
   }
