@@ -60,12 +60,12 @@ String formatUnitCost(double value) {
 String formatDate(DateTime date) =>
     '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
 
-int? parseCurrencyToCents(String value) {
+int? parseCurrencyToCents(String value, {bool allowZero = false}) {
   final cleaned = value.replaceAll(RegExp(r'[^0-9,.]'), '');
   if (cleaned.isEmpty) return null;
   final normalized = _normalizeNumber(cleaned);
   final parsed = double.tryParse(normalized);
-  if (parsed == null || parsed <= 0) return null;
+  if (parsed == null || parsed < 0 || (!allowZero && parsed == 0)) return null;
   return (parsed * 100).round();
 }
 

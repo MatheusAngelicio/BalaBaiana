@@ -77,6 +77,7 @@ class ProductionsRepository {
       'status': 'finalized',
       'yieldUnits': yieldUnits,
       'profitPercentage': profitPercentage,
+      'profitBasis': 'labor',
       'pricing': {
         'totalCostCents': pricing.totalCostCents,
         'costPerUnitCents': pricing.costPerUnitCents,

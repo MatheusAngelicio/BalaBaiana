@@ -89,40 +89,24 @@ class _FinalizeForm extends StatefulWidget {
 }
 
 class _FinalizeFormState extends State<_FinalizeForm> {
-  static const _defaultLabels = {
-    'packaging': 'Embalagem por bala',
-    'label': 'Etiqueta por bala',
-    'labor': 'Mão de obra por bala',
-    'fixed': 'Custo fixo por bala',
-  };
-
   final _formKey = GlobalKey<FormState>();
   final _yieldController = TextEditingController();
-  final _profitController = TextEditingController(text: '100');
-  late final Map<String, TextEditingController> _defaultCostControllers;
+  late final TextEditingController _packagingController;
   bool _isSaving = false;
 
   @override
   void initState() {
     super.initState();
-    final defaults = widget.defaults.toMap();
-    _defaultCostControllers = {
-      for (final entry in _defaultLabels.entries)
-        entry.key: TextEditingController(
-          text: defaults[entry.key] == 0
-              ? ''
-              : formatCurrencyInput(defaults[entry.key]!),
-        ),
-    };
+    final packaging = widget.defaults.packagingAndLabelCents;
+    _packagingController = TextEditingController(
+      text: packaging == 0 ? '' : formatCurrencyInput(packaging),
+    );
   }
 
   @override
   void dispose() {
     _yieldController.dispose();
-    _profitController.dispose();
-    for (final controller in _defaultCostControllers.values) {
-      controller.dispose();
-    }
+    _packagingController.dispose();
     super.dispose();
   }
 
@@ -130,14 +114,11 @@ class _FinalizeFormState extends State<_FinalizeForm> {
         for (final purchase in widget.purchases) purchase.id: purchase,
       };
 
-  Map<String, int> get _costsPerUnitCents => {
-        for (final entry in _defaultCostControllers.entries)
-          entry.key: parseCurrencyToCents(entry.value.text) ?? 0,
-      };
+  int? get _packagingCents => _packagingController.text.trim().isEmpty
+      ? 0
+      : parseCurrencyToCents(_packagingController.text, allowZero: true);
 
   int? get _yieldUnits => int.tryParse(_yieldController.text.trim());
-
-  double? get _profitPercentage => parsePositiveNumber(_profitController.text);
 
   double? get _syrupCost => widget.draft.syrup == null
       ? 0.0
@@ -165,27 +146,32 @@ class _FinalizeFormState extends State<_FinalizeForm> {
               purchasesById: _purchasesById,
             );
 
-  int? get _totalCostCents {
-    if (_syrupCost == null ||
-        _baseCost == null ||
-        _fillingCost == null ||
-        _yieldUnits == null) {
+  ProductionCostBreakdown? get _breakdown {
+    final syrupCost = _syrupCost;
+    final baseCost = _baseCost;
+    final fillingCost = _fillingCost;
+    if (syrupCost == null || baseCost == null || fillingCost == null) {
       return null;
     }
-    final ingredientsCents =
-        ((_syrupCost! + _baseCost! + _fillingCost!) * 100).round();
-    final defaultsCents =
-        _costsPerUnitCents.values.fold(0, (total, value) => total + value) *
-            _yieldUnits!;
-    return ingredientsCents + defaultsCents;
+    return ProductionCostBreakdown(
+      recipeCostCents: ((syrupCost + baseCost + fillingCost) * 100).round(),
+    );
   }
 
   ProductionPricing? get _pricing {
-    if (_totalCostCents == null || _profitPercentage == null) return null;
+    final breakdown = _breakdown;
+    final yieldUnits = _yieldUnits;
+    final packaging = _packagingCents;
+    if (breakdown == null ||
+        yieldUnits == null ||
+        yieldUnits <= 0 ||
+        packaging == null) {
+      return null;
+    }
     return ProductionPricing.calculate(
-      totalCostCents: _totalCostCents!,
-      yieldUnits: _yieldUnits!,
-      profitPercentage: _profitPercentage!,
+      recipeCostCents: breakdown.recipeCostCents,
+      yieldUnits: yieldUnits,
+      packagingAndLabelPerUnitCents: packaging,
     );
   }
 
@@ -204,7 +190,7 @@ class _FinalizeFormState extends State<_FinalizeForm> {
       await widget.productionsRepository.finalizeDraft(
         draft: widget.draft,
         yieldUnits: _yieldUnits!,
-        profitPercentage: _profitPercentage!,
+        profitPercentage: 100,
         pricing: pricing,
         costSnapshot: {
           'syrup': widget.draft.syrup == null
@@ -226,7 +212,10 @@ class _FinalizeFormState extends State<_FinalizeForm> {
                   selection: widget.draft.filling!,
                   costCents: (_fillingCost! * 100).round(),
                 ),
-          'costsPerUnitCents': _costsPerUnitCents,
+          'calculationRule': 'recipe20_labor100_profit100',
+          'profitBasis': 'labor',
+          ..._breakdown!.toMap(),
+          'costsPerUnitCents': {'packagingAndLabel': _packagingCents!},
         },
       );
       if (!mounted) return;
@@ -301,49 +290,46 @@ class _FinalizeFormState extends State<_FinalizeForm> {
                       : null,
             ),
             const SizedBox(height: 24),
-            Text('Custos por bala',
+            Text('Custos e lucro da produção',
                 style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 6),
             const Text(
-                'Valores sugeridos pelas configurações. Você pode ajustar apenas nesta produção.'),
+                'Valores totais calculados automaticamente a partir dos ingredientes usados na receita.'),
             const SizedBox(height: 12),
-            ..._defaultLabels.entries.map(
-              (entry) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: TextFormField(
-                  controller: _defaultCostControllers[entry.key],
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: [CurrencyInputFormatter()],
-                  onChanged: (_) => setState(() {}),
-                  decoration: InputDecoration(
-                    labelText: entry.value,
-                    prefixText: 'R\$ ',
-                    border: const OutlineInputBorder(),
-                  ),
-                  validator: (value) => value == null ||
-                          value.trim().isEmpty ||
-                          parseCurrencyToCents(value) != null
-                      ? null
-                      : 'Informe um valor válido.',
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
+            if (_breakdown case final breakdown?) ...[
+              _CalculatedAmount(
+                  label: 'Custo da receita', cents: breakdown.recipeCostCents),
+              _CalculatedAmount(
+                  label: 'Custo fixo (20% da receita)',
+                  cents: breakdown.fixedCostCents),
+              _CalculatedAmount(
+                  label: 'Mão de obra (receita + custo fixo)',
+                  cents: breakdown.laborCostCents),
+              _CalculatedAmount(
+                  label: 'Lucro (100% da mão de obra)',
+                  cents: breakdown.targetProfitCents),
+            ] else
+              const Text(
+                  'Revise as compras usadas na receita para calcular os custos.'),
+            const SizedBox(height: 20),
             TextFormField(
-              controller: _profitController,
+              controller: _packagingController,
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [CurrencyInputFormatter()],
               onChanged: (_) => setState(() {}),
               decoration: const InputDecoration(
-                labelText: 'Lucro desejado',
-                suffixText: '% sobre o custo',
+                labelText: 'Embalagem e etiqueta por bala',
+                prefixText: 'R\$ ',
                 border: OutlineInputBorder(),
               ),
-              validator: (value) => parsePositiveNumber(value ?? '') == null
-                  ? 'Informe uma porcentagem maior que zero.'
-                  : null,
+              validator: (_) =>
+                  _packagingCents == null ? 'Informe um valor válido.' : null,
             ),
+            const SizedBox(height: 10),
+            const Text(
+                'Informe o valor combinado por bala. Ele será multiplicado pelo rendimento e somado aos custos. '
+                'Custo fixo, mão de obra e lucro seguem as regras acima.'),
             const SizedBox(height: 20),
             _PricingSummary(pricing: pricing),
             const SizedBox(height: 28),
@@ -383,14 +369,35 @@ class _PricingSummary extends StatelessWidget {
       child: pricing == null
           ? const Text('Informe o rendimento para calcular o preço sugerido.')
           : Text(
-              'Custo total: ${formatCurrency(pricing.totalCostCents)}\n'
+              'Custo total (receita, fixo, mão de obra e embalagem): ${formatCurrency(pricing.totalCostCents)}\n'
               'Custo por bala: ${formatCurrency(pricing.costPerUnitCents)}\n\n'
               'Venda sugerida por bala: ${formatCurrency(pricing.suggestedPriceCents)}\n'
               'Lucro por bala: ${formatCurrency(pricing.profitPerUnitCents)}\n'
               'Venda estimada: ${formatCurrency(pricing.estimatedRevenueCents)}\n'
-              'Lucro estimado: ${formatCurrency(pricing.estimatedProfitCents)}',
+              'Lucro estimado: ${formatCurrency(pricing.estimatedProfitCents)}\n\n'
+              'O preço por bala é arredondado aos centavos; o lucro estimado pode variar alguns centavos.',
               style: Theme.of(context).textTheme.titleSmall,
             ),
     );
   }
+}
+
+class _CalculatedAmount extends StatelessWidget {
+  const _CalculatedAmount({required this.label, required this.cents});
+
+  final String label;
+  final int cents;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Row(
+          children: [
+            Expanded(child: Text(label)),
+            const SizedBox(width: 12),
+            Text(formatCurrency(cents),
+                style: Theme.of(context).textTheme.titleSmall),
+          ],
+        ),
+      );
 }

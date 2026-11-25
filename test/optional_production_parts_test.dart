@@ -89,7 +89,7 @@ class RecordingProductions extends Fake implements ProductionsRepository {
 class TestSettings extends Fake implements SettingsRepository {
   @override
   Future<CostDefaults> getCostDefaults() async =>
-      const CostDefaults(packagingCents: 10);
+      const CostDefaults(packagingAndLabelCents: 10);
 }
 
 Future<void> showPage(WidgetTester tester, Widget page) async {
@@ -165,7 +165,7 @@ void main() {
             .tap(find.widgetWithText(FilledButton, 'Finalizar produção'));
         await tester.pumpAndSettle();
         expect(repository.pricing?.totalCostCents,
-            1100 + (withSyrup ? 1000 : 0) + (withFilling ? 1000 : 0));
+            2500 + (withSyrup ? 2400 : 0) + (withFilling ? 2400 : 0));
         expect(repository.snapshot?['syrup'], withSyrup ? isNotNull : isNull);
         expect(
             repository.snapshot?['filling'], withFilling ? isNotNull : isNull);
@@ -173,6 +173,60 @@ void main() {
       });
     }
   }
+
+  testWidgets('shows automatic amounts and edits only combined packaging',
+      (tester) async {
+    final repository = RecordingProductions();
+    await showPage(
+        tester,
+        ProductionFinalizePage(
+          draft: makeDraft(false, false),
+          syrup: null,
+          base: dough,
+          filling: null,
+          purchases: [purchase],
+          productionsRepository: repository,
+          settingsRepository: TestSettings(),
+        ));
+    expect(find.byType(TextFormField), findsNWidgets(2));
+    expect(find.text('Custo da receita'), findsOneWidget);
+    expect(find.text('Custo fixo (20% da receita)'), findsOneWidget);
+    expect(find.text('Mão de obra (receita + custo fixo)'), findsOneWidget);
+    expect(find.text('Lucro (100% da mão de obra)'), findsOneWidget);
+    final yieldField =
+        find.widgetWithText(TextFormField, 'Quantas balas renderam?');
+    final finalizeButton =
+        find.widgetWithText(FilledButton, 'Finalizar produção');
+    for (final invalidYield in ['0', '-1', '']) {
+      await tester.enterText(yieldField, invalidYield);
+      await tester.pumpAndSettle();
+      expect(tester.widget<FilledButton>(finalizeButton).onPressed, isNull);
+      expect(tester.takeException(), isNull);
+    }
+    await tester.enterText(yieldField, '10');
+    await tester.enterText(
+        find.widgetWithText(TextFormField, 'Embalagem e etiqueta por bala'),
+        '0');
+    await tester.pumpAndSettle();
+    expect(tester.widget<FilledButton>(finalizeButton).onPressed, isNotNull);
+
+    await tester.enterText(
+        find.widgetWithText(TextFormField, 'Embalagem e etiqueta por bala'),
+        '050');
+    await tester.pumpAndSettle();
+    await tester.tap(finalizeButton);
+    await tester.pumpAndSettle();
+    expect(repository.pricing?.totalCostCents, 2900);
+    expect(repository.pricing?.suggestedPriceCents, 410);
+    expect(repository.pricing?.estimatedProfitCents, 1200);
+    expect(repository.snapshot?['recipeCostCents'], 1000);
+    expect(repository.snapshot?['fixedCostCents'], 200);
+    expect(repository.snapshot?['laborCostCents'], 1200);
+    expect(repository.snapshot?['targetProfitCents'], 1200);
+    expect(
+        repository.snapshot?['costsPerUnitCents'], {'packagingAndLabel': 50});
+    expect(repository.snapshot?['profitBasis'], 'labor');
+  });
 
   testWidgets('does not ignore a selected recipe that is unavailable',
       (tester) async {

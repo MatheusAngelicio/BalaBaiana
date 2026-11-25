@@ -54,10 +54,7 @@ class _CostDefaultsFormState extends State<_CostDefaultsForm> {
   bool _isSaving = false;
 
   static const _labels = {
-    'packaging': 'Embalagem por bala',
-    'label': 'Etiqueta por bala',
-    'labor': 'Mão de obra por bala',
-    'fixed': 'Custo fixo por bala',
+    'packagingAndLabel': 'Embalagem e etiqueta por bala',
   };
 
   @override
@@ -88,11 +85,10 @@ class _CostDefaultsFormState extends State<_CostDefaultsForm> {
     try {
       await widget.repository.saveCostDefaults(
         CostDefaults(
-          packagingCents:
-              parseCurrencyToCents(_controllers['packaging']!.text) ?? 0,
-          labelCents: parseCurrencyToCents(_controllers['label']!.text) ?? 0,
-          laborCents: parseCurrencyToCents(_controllers['labor']!.text) ?? 0,
-          fixedCents: parseCurrencyToCents(_controllers['fixed']!.text) ?? 0,
+          packagingAndLabelCents: parseCurrencyToCents(
+                  _controllers['packagingAndLabel']!.text,
+                  allowZero: true) ??
+              0,
         ),
       );
       if (!mounted) return;
@@ -124,7 +120,7 @@ class _CostDefaultsFormState extends State<_CostDefaultsForm> {
             ),
             const SizedBox(height: 6),
             const Text(
-              'Eles serão sugeridos ao finalizar uma produção e poderão ser alterados naquele momento.',
+              'O valor de embalagem e etiqueta será sugerido na finalização. Custo fixo, mão de obra e lucro são calculados automaticamente a partir da receita.',
             ),
             const SizedBox(height: 24),
             ..._labels.entries.map(
@@ -143,7 +139,7 @@ class _CostDefaultsFormState extends State<_CostDefaultsForm> {
                   ),
                   validator: (value) => value == null ||
                           value.trim().isEmpty ||
-                          parseCurrencyToCents(value) != null
+                          parseCurrencyToCents(value, allowZero: true) != null
                       ? null
                       : 'Informe um valor válido.',
                 ),
