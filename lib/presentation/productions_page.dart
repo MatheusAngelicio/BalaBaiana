@@ -648,11 +648,7 @@ class _DraftCard extends StatelessWidget {
               );
     final hasCurrentCost =
         syrupCost != null && baseCost != null && fillingCost != null;
-    final extras =
-        draft.extraCostsCents.values.fold(0, (total, value) => total + value) /
-            100;
-    final total =
-        (syrupCost ?? 0) + (baseCost ?? 0) + (fillingCost ?? 0) + extras;
+    final total = (syrupCost ?? 0) + (baseCost ?? 0) + (fillingCost ?? 0);
 
     return Card(
       child: Column(
@@ -663,7 +659,7 @@ class _DraftCard extends StatelessWidget {
             title: Text(draft.name),
             subtitle: Text(
               hasCurrentCost
-                  ? 'Custo atual: ${formatCurrency((total * 100).round())}\nAguardando rendimento e preço de venda.'
+                  ? 'Custo dos ingredientes: ${formatCurrency((total * 100).round())}\nAguardando rendimento e preço de venda.'
                   : 'Uma das receitas ou compras usadas precisa ser revisada.',
             ),
             isThreeLine: hasCurrentCost,

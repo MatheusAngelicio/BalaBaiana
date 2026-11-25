@@ -27,7 +27,6 @@ class ProductionDraft {
     this.syrup,
     required this.base,
     this.filling,
-    required this.extraCostsCents,
   });
 
   final String id;
@@ -35,7 +34,6 @@ class ProductionDraft {
   final ProductionPartSelection? syrup;
   final ProductionPartSelection base;
   final ProductionPartSelection? filling;
-  final Map<String, int> extraCostsCents;
 
   factory ProductionDraft.fromMap(String id, Map<String, dynamic> map) {
     return ProductionDraft(
@@ -51,7 +49,6 @@ class ProductionDraft {
           ? null
           : ProductionPartSelection.fromMap(
               Map<String, dynamic>.from(map['filling'] as Map)),
-      extraCostsCents: Map<String, int>.from(map['extraCostsCents'] as Map),
     );
   }
 
@@ -61,6 +58,5 @@ class ProductionDraft {
         'base': base.toMap(),
         'syrup': syrup?.toMap(),
         'filling': filling?.toMap(),
-        'extraCostsCents': extraCostsCents,
       };
 }

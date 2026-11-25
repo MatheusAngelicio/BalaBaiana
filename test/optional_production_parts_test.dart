@@ -61,12 +61,6 @@ ProductionDraft makeDraft(bool withSyrup, bool withFilling) => ProductionDraft(
           ? const ProductionPartSelection(
               recipeId: 'filling', quantityUsed: 100)
           : null,
-      extraCostsCents: const {
-        'packaging': 200,
-        'label': 0,
-        'labor': 0,
-        'fixed': 0
-      },
     );
 
 class RecordingProductions extends Fake implements ProductionsRepository {
@@ -139,7 +133,7 @@ void main() {
               productionsRepository: repository,
               draft: draft,
             ));
-        expect(find.textContaining('Custo atual da produção:'), findsOneWidget);
+        expect(find.textContaining('Custo dos ingredientes:'), findsOneWidget);
         await tester.tap(find.text('Salvar montagem'));
         await tester.pumpAndSettle();
         expect(repository.saved?.toMap(), draft.toMap());
@@ -152,7 +146,10 @@ void main() {
         await showPage(
             tester,
             ProductionFinalizePage(
-              draft: draft,
+              draft: ProductionDraft.fromMap(draft.id, {
+                ...draft.toMap(),
+                'extraCostsCents': {'packaging': 200},
+              }),
               syrup: withSyrup ? syrup : null,
               base: dough,
               filling: withFilling ? filling : null,
@@ -168,7 +165,7 @@ void main() {
             .tap(find.widgetWithText(FilledButton, 'Finalizar produção'));
         await tester.pumpAndSettle();
         expect(repository.pricing?.totalCostCents,
-            1300 + (withSyrup ? 1000 : 0) + (withFilling ? 1000 : 0));
+            1100 + (withSyrup ? 1000 : 0) + (withFilling ? 1000 : 0));
         expect(repository.snapshot?['syrup'], withSyrup ? isNotNull : isNull);
         expect(
             repository.snapshot?['filling'], withFilling ? isNotNull : isNull);

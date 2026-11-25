@@ -31,19 +31,11 @@ class ProductionFormPage extends StatefulWidget {
 }
 
 class _ProductionFormPageState extends State<ProductionFormPage> {
-  static const _extraLabels = {
-    'packaging': 'Embalagem (total)',
-    'label': 'Etiqueta (total)',
-    'labor': 'Mão de obra (total)',
-    'fixed': 'Custo fixo (total)',
-  };
-
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _syrupQuantityController;
   late final TextEditingController _baseQuantityController;
   late final TextEditingController _fillingQuantityController;
-  late final Map<String, TextEditingController> _extraCostControllers;
   String? _syrupId;
   String? _baseId;
   String? _fillingId;
@@ -70,14 +62,6 @@ class _ProductionFormPageState extends State<ProductionFormPage> {
           ? ''
           : formatQuantity(draft!.filling!.quantityUsed),
     );
-    _extraCostControllers = {
-      for (final entry in _extraLabels.entries)
-        entry.key: TextEditingController(
-          text: draft == null || (draft.extraCostsCents[entry.key] ?? 0) == 0
-              ? ''
-              : formatCurrencyInput(draft.extraCostsCents[entry.key]!),
-        ),
-    };
   }
 
   @override
@@ -86,9 +70,6 @@ class _ProductionFormPageState extends State<ProductionFormPage> {
     _syrupQuantityController.dispose();
     _baseQuantityController.dispose();
     _fillingQuantityController.dispose();
-    for (final controller in _extraCostControllers.values) {
-      controller.dispose();
-    }
     super.dispose();
   }
 
@@ -108,11 +89,6 @@ class _ProductionFormPageState extends State<ProductionFormPage> {
 
   Map<String, Purchase> get _purchasesById => {
         for (final purchase in widget.purchases) purchase.id: purchase,
-      };
-
-  Map<String, int> get _extraCostsCents => {
-        for (final entry in _extraCostControllers.entries)
-          entry.key: parseCurrencyToCents(entry.value.text) ?? 0,
       };
 
   double? _recipeCost(RecipeBase? recipe, TextEditingController controller) {
@@ -177,7 +153,6 @@ class _ProductionFormPageState extends State<ProductionFormPage> {
                   quantityUsed:
                       parsePositiveNumber(_fillingQuantityController.text)!,
                 ),
-          extraCostsCents: _extraCostsCents,
         ),
       );
       if (!mounted) return;
@@ -206,12 +181,9 @@ class _ProductionFormPageState extends State<ProductionFormPage> {
         _syrupId == null ? 0.0 : _recipeCost(syrup, _syrupQuantityController);
     final baseCost = _recipeCost(base, _baseQuantityController);
     final fillingCost = _fillingId == null ? 0.0 : _fillingCost(filling);
-    final extrasCost =
-        _extraCostsCents.values.fold(0, (total, value) => total + value) / 100;
     final hasAllPartCosts =
         syrupCost != null && baseCost != null && fillingCost != null;
-    final totalCost =
-        (syrupCost ?? 0) + (baseCost ?? 0) + (fillingCost ?? 0) + extrasCost;
+    final totalCost = (syrupCost ?? 0) + (baseCost ?? 0) + (fillingCost ?? 0);
 
     return Scaffold(
       appBar: AppBar(
@@ -270,38 +242,6 @@ class _ProductionFormPageState extends State<ProductionFormPage> {
                 cost: fillingCost,
               ),
               const SizedBox(height: 28),
-              ExpansionTile(
-                tilePadding: EdgeInsets.zero,
-                title: Text('Custos extras',
-                    style: Theme.of(context).textTheme.titleMedium),
-                subtitle: const Text(
-                    'Opcional — informe o total usado nesta produção.'),
-                children: _extraLabels.entries
-                    .map(
-                      (entry) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: TextFormField(
-                          controller: _extraCostControllers[entry.key],
-                          keyboardType: const TextInputType.numberWithOptions(
-                              decimal: true),
-                          inputFormatters: [CurrencyInputFormatter()],
-                          onChanged: (_) => setState(() {}),
-                          decoration: InputDecoration(
-                            labelText: entry.value,
-                            prefixText: 'R\$ ',
-                            border: const OutlineInputBorder(),
-                          ),
-                          validator: (value) => value == null ||
-                                  value.trim().isEmpty ||
-                                  parseCurrencyToCents(value) != null
-                              ? null
-                              : 'Informe um valor válido.',
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
-              const SizedBox(height: 20),
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -310,15 +250,15 @@ class _ProductionFormPageState extends State<ProductionFormPage> {
                 ),
                 child: Text(
                   hasAllPartCosts
-                      ? 'Custo atual da produção: ${formatCurrency((totalCost * 100).round())}\n'
-                          'Inclui as partes selecionadas e os custos extras.'
+                      ? 'Custo dos ingredientes: ${formatCurrency((totalCost * 100).round())}\n'
+                          'Inclui as partes selecionadas da receita.'
                       : 'Selecione a massa da bala e informe as quantidades das partes usadas para ver o custo.',
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
               ),
               const SizedBox(height: 10),
               const Text(
-                  'Salve a montagem para informar o rendimento e o preço de venda.'),
+                  'Na próxima etapa, informe o rendimento, os custos extras e o preço de venda.'),
               const SizedBox(height: 28),
               FilledButton(
                 onPressed: _isSaving ? null : _save,

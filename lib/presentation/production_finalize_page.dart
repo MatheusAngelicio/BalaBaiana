@@ -165,9 +165,6 @@ class _FinalizeFormState extends State<_FinalizeForm> {
               purchasesById: _purchasesById,
             );
 
-  int get _draftExtraCents => widget.draft.extraCostsCents.values
-      .fold(0, (total, value) => total + value);
-
   int? get _totalCostCents {
     if (_syrupCost == null ||
         _baseCost == null ||
@@ -180,7 +177,7 @@ class _FinalizeFormState extends State<_FinalizeForm> {
     final defaultsCents =
         _costsPerUnitCents.values.fold(0, (total, value) => total + value) *
             _yieldUnits!;
-    return ingredientsCents + _draftExtraCents + defaultsCents;
+    return ingredientsCents + defaultsCents;
   }
 
   ProductionPricing? get _pricing {
@@ -229,7 +226,6 @@ class _FinalizeFormState extends State<_FinalizeForm> {
                   selection: widget.draft.filling!,
                   costCents: (_fillingCost! * 100).round(),
                 ),
-          'draftExtraCostsCents': widget.draft.extraCostsCents,
           'costsPerUnitCents': _costsPerUnitCents,
         },
       );
