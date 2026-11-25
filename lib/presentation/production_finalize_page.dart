@@ -24,9 +24,9 @@ class ProductionFinalizePage extends StatelessWidget {
   });
 
   final ProductionDraft draft;
-  final RecipeBase syrup;
+  final RecipeBase? syrup;
   final RecipeBase base;
-  final Filling filling;
+  final Filling? filling;
   final List<Purchase> purchases;
   final ProductionsRepository productionsRepository;
   final SettingsRepository? settingsRepository;
@@ -77,9 +77,9 @@ class _FinalizeForm extends StatefulWidget {
   });
 
   final ProductionDraft draft;
-  final RecipeBase syrup;
+  final RecipeBase? syrup;
   final RecipeBase base;
-  final Filling filling;
+  final Filling? filling;
   final List<Purchase> purchases;
   final CostDefaults defaults;
   final ProductionsRepository productionsRepository;
@@ -139,11 +139,15 @@ class _FinalizeFormState extends State<_FinalizeForm> {
 
   double? get _profitPercentage => parsePositiveNumber(_profitController.text);
 
-  double? get _syrupCost => CostCalculator.recipeBaseProportionalCost(
-        recipe: widget.syrup,
-        quantityUsed: widget.draft.syrup.quantityUsed,
-        purchasesById: _purchasesById,
-      );
+  double? get _syrupCost => widget.draft.syrup == null
+      ? 0.0
+      : widget.syrup == null
+          ? null
+          : CostCalculator.recipeBaseProportionalCost(
+              recipe: widget.syrup!,
+              quantityUsed: widget.draft.syrup!.quantityUsed,
+              purchasesById: _purchasesById,
+            );
 
   double? get _baseCost => CostCalculator.recipeBaseProportionalCost(
         recipe: widget.base,
@@ -151,11 +155,15 @@ class _FinalizeFormState extends State<_FinalizeForm> {
         purchasesById: _purchasesById,
       );
 
-  double? get _fillingCost => CostCalculator.fillingProportionalCost(
-        filling: widget.filling,
-        quantityUsed: widget.draft.filling.quantityUsed,
-        purchasesById: _purchasesById,
-      );
+  double? get _fillingCost => widget.draft.filling == null
+      ? 0.0
+      : widget.filling == null
+          ? null
+          : CostCalculator.fillingProportionalCost(
+              filling: widget.filling!,
+              quantityUsed: widget.draft.filling!.quantityUsed,
+              purchasesById: _purchasesById,
+            );
 
   int get _draftExtraCents => widget.draft.extraCostsCents.values
       .fold(0, (total, value) => total + value);
@@ -202,21 +210,25 @@ class _FinalizeFormState extends State<_FinalizeForm> {
         profitPercentage: _profitPercentage!,
         pricing: pricing,
         costSnapshot: {
-          'syrup': _recipeSnapshot(
-            recipe: widget.syrup,
-            selection: widget.draft.syrup,
-            costCents: (_syrupCost! * 100).round(),
-          ),
+          'syrup': widget.draft.syrup == null
+              ? null
+              : _recipeSnapshot(
+                  recipe: widget.syrup!,
+                  selection: widget.draft.syrup!,
+                  costCents: (_syrupCost! * 100).round(),
+                ),
           'base': _recipeSnapshot(
             recipe: widget.base,
             selection: widget.draft.base,
             costCents: (_baseCost! * 100).round(),
           ),
-          'filling': _fillingSnapshot(
-            filling: widget.filling,
-            selection: widget.draft.filling,
-            costCents: (_fillingCost! * 100).round(),
-          ),
+          'filling': widget.draft.filling == null
+              ? null
+              : _fillingSnapshot(
+                  filling: widget.filling!,
+                  selection: widget.draft.filling!,
+                  costCents: (_fillingCost! * 100).round(),
+                ),
           'draftExtraCostsCents': widget.draft.extraCostsCents,
           'costsPerUnitCents': _costsPerUnitCents,
         },

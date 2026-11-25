@@ -24,16 +24,43 @@ class ProductionDraft {
   const ProductionDraft({
     required this.id,
     required this.name,
-    required this.syrup,
+    this.syrup,
     required this.base,
-    required this.filling,
+    this.filling,
     required this.extraCostsCents,
   });
 
   final String id;
   final String name;
-  final ProductionPartSelection syrup;
+  final ProductionPartSelection? syrup;
   final ProductionPartSelection base;
-  final ProductionPartSelection filling;
+  final ProductionPartSelection? filling;
   final Map<String, int> extraCostsCents;
+
+  factory ProductionDraft.fromMap(String id, Map<String, dynamic> map) {
+    return ProductionDraft(
+      id: id,
+      name: map['name'] as String,
+      syrup: map['syrup'] == null
+          ? null
+          : ProductionPartSelection.fromMap(
+              Map<String, dynamic>.from(map['syrup'] as Map)),
+      base: ProductionPartSelection.fromMap(
+          Map<String, dynamic>.from(map['base'] as Map)),
+      filling: map['filling'] == null
+          ? null
+          : ProductionPartSelection.fromMap(
+              Map<String, dynamic>.from(map['filling'] as Map)),
+      extraCostsCents: Map<String, int>.from(map['extraCostsCents'] as Map),
+    );
+  }
+
+  Map<String, dynamic> toMap() => {
+        'name': name.trim(),
+        // Keep storage keys compatible with existing productions.
+        'base': base.toMap(),
+        'syrup': syrup?.toMap(),
+        'filling': filling?.toMap(),
+        'extraCostsCents': extraCostsCents,
+      };
 }

@@ -19,24 +19,7 @@ class ProductionsRepository {
               .where((document) => document.data()['status'] == 'draft')
               .map((document) {
             final data = document.data();
-            return ProductionDraft(
-              id: document.id,
-              name: data['name'] as String,
-              syrup: ProductionPartSelection.fromMap(
-                Map<String, dynamic>.from(data['syrup'] as Map),
-              ),
-              base: ProductionPartSelection.fromMap(
-                Map<String, dynamic>.from(data['base'] as Map),
-              ),
-              filling: ProductionPartSelection.fromMap(
-                Map<String, dynamic>.from(data['filling'] as Map),
-              ),
-              extraCostsCents: Map<String, int>.from(
-                (data['extraCostsCents'] as Map).map(
-                  (key, value) => MapEntry(key as String, value as int),
-                ),
-              ),
-            );
+            return ProductionDraft.fromMap(document.id, data);
           }).toList(),
         );
   }
@@ -72,12 +55,8 @@ class ProductionsRepository {
 
   Future<void> saveDraft(ProductionDraft draft) {
     final data = {
-      'name': draft.name.trim(),
+      ...draft.toMap(),
       'status': 'draft',
-      'syrup': draft.syrup.toMap(),
-      'base': draft.base.toMap(),
-      'filling': draft.filling.toMap(),
-      'extraCostsCents': draft.extraCostsCents,
       'updatedAt': FieldValue.serverTimestamp(),
     };
     if (draft.id.isEmpty) {

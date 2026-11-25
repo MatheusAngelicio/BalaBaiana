@@ -166,7 +166,7 @@ class _RecipeBaseFormPageState extends State<RecipeBaseFormPage> {
                   labelText: 'Nome da ${widget.type.label.toLowerCase()}',
                   hintText: widget.type == RecipeBaseType.syrup
                       ? 'Ex.: Calda tradicional'
-                      : 'Ex.: Base cremosa',
+                      : 'Ex.: Massa cremosa',
                   border: const OutlineInputBorder(),
                 ),
                 validator: (value) => (value?.trim().isEmpty ?? true)

@@ -6,13 +6,13 @@ enum RecipeBaseType {
 
   String get label => switch (this) {
         RecipeBaseType.syrup => 'Calda',
-        RecipeBaseType.base => 'Base',
+        RecipeBaseType.base => 'Massa da bala',
       };
 
   static RecipeBaseType fromStorage(String value) => switch (value) {
         'syrup' => RecipeBaseType.syrup,
         'base' => RecipeBaseType.base,
-        _ => throw ArgumentError('Tipo de receita-base inválido: $value'),
+        _ => throw ArgumentError('Tipo de receita inválido: $value'),
       };
 }
 

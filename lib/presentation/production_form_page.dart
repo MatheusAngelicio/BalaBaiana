@@ -54,17 +54,21 @@ class _ProductionFormPageState extends State<ProductionFormPage> {
     super.initState();
     final draft = widget.draft;
     _nameController = TextEditingController(text: draft?.name ?? '');
-    _syrupId = draft?.syrup.recipeId;
+    _syrupId = draft?.syrup?.recipeId;
     _baseId = draft?.base.recipeId;
-    _fillingId = draft?.filling.recipeId;
+    _fillingId = draft?.filling?.recipeId;
     _syrupQuantityController = TextEditingController(
-      text: draft == null ? '' : formatQuantity(draft.syrup.quantityUsed),
+      text: draft?.syrup == null
+          ? ''
+          : formatQuantity(draft!.syrup!.quantityUsed),
     );
     _baseQuantityController = TextEditingController(
       text: draft == null ? '' : formatQuantity(draft.base.quantityUsed),
     );
     _fillingQuantityController = TextEditingController(
-      text: draft == null ? '' : formatQuantity(draft.filling.quantityUsed),
+      text: draft?.filling == null
+          ? ''
+          : formatQuantity(draft!.filling!.quantityUsed),
     );
     _extraCostControllers = {
       for (final entry in _extraLabels.entries)
@@ -133,12 +137,13 @@ class _ProductionFormPageState extends State<ProductionFormPage> {
 
   Future<void> _save() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    final syrup = _findRecipe(widget.syrups, _syrupId)!;
+    final syrup = _findRecipe(widget.syrups, _syrupId);
     final base = _findRecipe(widget.bases, _baseId)!;
-    final filling = _findFilling(_fillingId)!;
-    final syrupCost = _recipeCost(syrup, _syrupQuantityController);
+    final filling = _findFilling(_fillingId);
+    final syrupCost =
+        _syrupId == null ? 0.0 : _recipeCost(syrup, _syrupQuantityController);
     final baseCost = _recipeCost(base, _baseQuantityController);
-    final fillingCost = _fillingCost(filling);
+    final fillingCost = _fillingId == null ? 0.0 : _fillingCost(filling);
     if (syrupCost == null || baseCost == null || fillingCost == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -154,18 +159,24 @@ class _ProductionFormPageState extends State<ProductionFormPage> {
         ProductionDraft(
           id: widget.draft?.id ?? '',
           name: _nameController.text,
-          syrup: ProductionPartSelection(
-            recipeId: syrup.id,
-            quantityUsed: parsePositiveNumber(_syrupQuantityController.text)!,
-          ),
+          syrup: syrup == null
+              ? null
+              : ProductionPartSelection(
+                  recipeId: syrup.id,
+                  quantityUsed:
+                      parsePositiveNumber(_syrupQuantityController.text)!,
+                ),
           base: ProductionPartSelection(
             recipeId: base.id,
             quantityUsed: parsePositiveNumber(_baseQuantityController.text)!,
           ),
-          filling: ProductionPartSelection(
-            recipeId: filling.id,
-            quantityUsed: parsePositiveNumber(_fillingQuantityController.text)!,
-          ),
+          filling: filling == null
+              ? null
+              : ProductionPartSelection(
+                  recipeId: filling.id,
+                  quantityUsed:
+                      parsePositiveNumber(_fillingQuantityController.text)!,
+                ),
           extraCostsCents: _extraCostsCents,
         ),
       );
@@ -191,9 +202,10 @@ class _ProductionFormPageState extends State<ProductionFormPage> {
     final syrup = _findRecipe(widget.syrups, _syrupId);
     final base = _findRecipe(widget.bases, _baseId);
     final filling = _findFilling(_fillingId);
-    final syrupCost = _recipeCost(syrup, _syrupQuantityController);
+    final syrupCost =
+        _syrupId == null ? 0.0 : _recipeCost(syrup, _syrupQuantityController);
     final baseCost = _recipeCost(base, _baseQuantityController);
-    final fillingCost = _fillingCost(filling);
+    final fillingCost = _fillingId == null ? 0.0 : _fillingCost(filling);
     final extrasCost =
         _extraCostsCents.values.fold(0, (total, value) => total + value) / 100;
     final hasAllPartCosts =
@@ -230,6 +242,7 @@ class _ProductionFormPageState extends State<ProductionFormPage> {
               const SizedBox(height: 12),
               _RecipePartField(
                 label: 'Calda',
+                optional: true,
                 recipes: widget.syrups,
                 selectedId: _syrupId,
                 quantityController: _syrupQuantityController,
@@ -239,7 +252,7 @@ class _ProductionFormPageState extends State<ProductionFormPage> {
               ),
               const SizedBox(height: 16),
               _RecipePartField(
-                label: 'Base da bala',
+                label: 'Massa da bala',
                 recipes: widget.bases,
                 selectedId: _baseId,
                 quantityController: _baseQuantityController,
@@ -298,8 +311,8 @@ class _ProductionFormPageState extends State<ProductionFormPage> {
                 child: Text(
                   hasAllPartCosts
                       ? 'Custo atual da produção: ${formatCurrency((totalCost * 100).round())}\n'
-                          'Inclui calda, base, recheio e custos extras.'
-                      : 'Selecione as três partes e suas quantidades para ver o custo.',
+                          'Inclui as partes selecionadas e os custos extras.'
+                      : 'Selecione a massa da bala e informe as quantidades das partes usadas para ver o custo.',
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
               ),
@@ -330,6 +343,7 @@ class _ProductionFormPageState extends State<ProductionFormPage> {
 class _RecipePartField extends StatelessWidget {
   const _RecipePartField({
     required this.label,
+    this.optional = false,
     required this.recipes,
     required this.selectedId,
     required this.quantityController,
@@ -339,6 +353,7 @@ class _RecipePartField extends StatelessWidget {
   });
 
   final String label;
+  final bool optional;
   final List<RecipeBase> recipes;
   final String? selectedId;
   final TextEditingController quantityController;
@@ -361,17 +376,23 @@ class _RecipePartField extends StatelessWidget {
       children: [
         DropdownButtonFormField<String>(
           key: ValueKey(label),
-          initialValue: selectedId,
+          initialValue: selected?.id ?? (optional ? '' : null),
           decoration: InputDecoration(
-            labelText: label,
+            labelText: optional ? '$label (opcional)' : label,
             border: const OutlineInputBorder(),
           ),
-          items: recipes
-              .map((recipe) =>
-                  DropdownMenuItem(value: recipe.id, child: Text(recipe.name)))
-              .toList(),
-          onChanged: onChanged,
-          validator: (value) => value == null ? 'Selecione uma opção.' : null,
+          items: [
+            if (optional)
+              const DropdownMenuItem(value: '', child: Text('Sem calda')),
+            ...recipes.map((recipe) =>
+                DropdownMenuItem(value: recipe.id, child: Text(recipe.name))),
+          ],
+          onChanged: (value) => onChanged(value == '' ? null : value),
+          validator: (_) => selectedId != null && selected == null
+              ? 'Receita indisponível. Selecione outra opção.'
+              : !optional && selected == null
+                  ? 'Selecione uma opção.'
+                  : null,
         ),
         if (selected != null) ...[
           const SizedBox(height: 10),
@@ -430,17 +451,20 @@ class _FillingPartField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         DropdownButtonFormField<String>(
-          initialValue: selectedId,
+          initialValue: selected?.id ?? '',
           decoration: const InputDecoration(
-            labelText: 'Recheio ou sabor',
+            labelText: 'Recheio ou sabor (opcional)',
             border: OutlineInputBorder(),
           ),
-          items: fillings
-              .map((filling) => DropdownMenuItem(
-                  value: filling.id, child: Text(filling.name)))
-              .toList(),
-          onChanged: onChanged,
-          validator: (value) => value == null ? 'Selecione uma opção.' : null,
+          items: [
+            const DropdownMenuItem(value: '', child: Text('Sem recheio')),
+            ...fillings.map((filling) =>
+                DropdownMenuItem(value: filling.id, child: Text(filling.name))),
+          ],
+          onChanged: (value) => onChanged(value == '' ? null : value),
+          validator: (_) => selectedId != null && selected == null
+              ? 'Recheio indisponível. Selecione outra opção.'
+              : null,
         ),
         if (selected != null) ...[
           const SizedBox(height: 10),

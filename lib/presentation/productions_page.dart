@@ -95,7 +95,7 @@ class ProductionsPage extends StatelessWidget {
           color: SectionColors.productions.start,
           title: 'Montar produção',
           description:
-              'Combine calda, base e recheio para calcular e precificar.',
+              'Monte com massa da bala e adicione calda e recheio se desejar.',
           onTap: () => _openSection(context, ProductionSection.assembly),
         ),
         const SizedBox(height: 12),
@@ -235,7 +235,7 @@ class _CycleItemsSummary extends StatelessWidget {
     final items = [
       '${summary.ingredients} ingrediente(s)',
       '${summary.purchases} compra(s)',
-      '${summary.recipeBases} calda(s) e base(s)',
+      '${summary.recipeBases} calda(s) e massa(s)',
       '${summary.fillings} recheio(s) e sabor(es)',
       '${summary.drafts} montagem(ns) em aberto',
     ];
@@ -402,24 +402,26 @@ class _ProductionsContent extends StatelessWidget {
   }
 
   void _finalizeDraft(BuildContext context, ProductionDraft draft) {
-    RecipeBase? findRecipe(String id) {
+    RecipeBase? findRecipe(String? id) {
       for (final recipe in recipes) {
         if (recipe.id == id) return recipe;
       }
       return null;
     }
 
-    Filling? findFilling(String id) {
+    Filling? findFilling(String? id) {
       for (final filling in fillings) {
         if (filling.id == id) return filling;
       }
       return null;
     }
 
-    final syrup = findRecipe(draft.syrup.recipeId);
+    final syrup = findRecipe(draft.syrup?.recipeId);
     final base = findRecipe(draft.base.recipeId);
-    final filling = findFilling(draft.filling.recipeId);
-    if (syrup == null || base == null || filling == null) {
+    final filling = findFilling(draft.filling?.recipeId);
+    if ((draft.syrup != null && syrup == null) ||
+        base == null ||
+        (draft.filling != null && filling == null)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Revise as receitas usadas antes de finalizar.')),
@@ -616,16 +618,18 @@ class _DraftCard extends StatelessWidget {
     final purchasesById = {
       for (final purchase in purchases) purchase.id: purchase
     };
-    final syrup = recipesById[draft.syrup.recipeId];
+    final syrup = recipesById[draft.syrup?.recipeId];
     final base = recipesById[draft.base.recipeId];
-    final filling = fillingsById[draft.filling.recipeId];
-    final syrupCost = syrup == null
-        ? null
-        : CostCalculator.recipeBaseProportionalCost(
-            recipe: syrup,
-            quantityUsed: draft.syrup.quantityUsed,
-            purchasesById: purchasesById,
-          );
+    final filling = fillingsById[draft.filling?.recipeId];
+    final syrupCost = draft.syrup == null
+        ? 0.0
+        : syrup == null
+            ? null
+            : CostCalculator.recipeBaseProportionalCost(
+                recipe: syrup,
+                quantityUsed: draft.syrup!.quantityUsed,
+                purchasesById: purchasesById,
+              );
     final baseCost = base == null
         ? null
         : CostCalculator.recipeBaseProportionalCost(
@@ -633,13 +637,15 @@ class _DraftCard extends StatelessWidget {
             quantityUsed: draft.base.quantityUsed,
             purchasesById: purchasesById,
           );
-    final fillingCost = filling == null
-        ? null
-        : CostCalculator.fillingProportionalCost(
-            filling: filling,
-            quantityUsed: draft.filling.quantityUsed,
-            purchasesById: purchasesById,
-          );
+    final fillingCost = draft.filling == null
+        ? 0.0
+        : filling == null
+            ? null
+            : CostCalculator.fillingProportionalCost(
+                filling: filling,
+                quantityUsed: draft.filling!.quantityUsed,
+                purchasesById: purchasesById,
+              );
     final hasCurrentCost =
         syrupCost != null && baseCost != null && fillingCost != null;
     final extras =

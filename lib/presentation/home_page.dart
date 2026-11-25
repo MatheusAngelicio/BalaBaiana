@@ -48,7 +48,7 @@ class HomePage extends StatelessWidget {
             icon: Icons.menu_book_outlined,
             color: SectionColors.recipes.start,
             title: 'Ver receitas',
-            description: 'Consulte caldas, bases e recheios.',
+            description: 'Consulte caldas, massas e recheios.',
             onTap: () => onNavigate(2),
           ),
           const SizedBox(height: 12),

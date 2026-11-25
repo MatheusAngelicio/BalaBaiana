@@ -143,7 +143,7 @@ class _RecipesContent extends StatelessWidget {
               const SectionHero(
                 palette: SectionColors.recipes,
                 title: 'Receitas e sabores',
-                subtitle: 'Deixe caldas, bases e recheios prontos para usar.',
+                subtitle: 'Deixe caldas, massas e recheios prontos para usar.',
               ),
               const SizedBox(height: 24),
               _RecipeSection(
@@ -171,7 +171,7 @@ class _RecipesContent extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               _RecipeSection(
-                title: 'Bases',
+                title: 'Massas da bala',
                 color: const Color(0xFF8B5C9D),
                 icon: Icons.layers_outlined,
                 recipes: bases,
